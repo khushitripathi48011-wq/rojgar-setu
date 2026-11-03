@@ -1,0 +1,2089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CareerTwin-X | Intelligence Career Engine</title>
+
+<!-- CLERK JAVASCRIPT SDK -->
+<script
+  async
+  crossorigin="anonymous"
+  data-clerk-publishable-key="pk_test_ZGlyZWN0LW1hbW1hbC05OTIzLmNsZXJrLmFjY291bnRzLmRldiQ"
+  src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+  type="text/javascript">
+</script>
+
+<style>
+/* GLOBAL */
+*{ margin:0; padding:0; box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+body{ background:#030511; color:#ffffff; font-family:Arial, Helvetica, sans-serif; overflow-x:hidden; }
+button, input, select{ font-family:inherit; }
+
+/* 1. HERO / HOME SCREEN */
+.hero{
+    height:100vh;
+    min-height:650px;
+    position:relative;
+    overflow:hidden;
+    background:
+        radial-gradient(circle at 75% 50%, rgba(138, 43, 226, 0.25), transparent 45%),
+        radial-gradient(circle at 85% 60%, rgba(0,120,255,.18), transparent 30%),
+        #040617;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8%;
+}
+
+.hero::before{
+    content:""; position:absolute; inset:0;
+    background: linear-gradient(90deg, rgba(2,4,18,.98) 0%, rgba(4,6,25,.8) 45%, rgba(5,6,25,.2) 100%);
+    z-index:1;
+}
+
+.hero::after{
+    content:""; position:absolute; inset:0;
+    background-image:
+        linear-gradient(rgba(126,78,255,.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(126,78,255,.08) 1px, transparent 1px);
+    background-size:55px 55px;
+    mask-image: linear-gradient(to right, transparent, black, transparent);
+    opacity:.35;
+    z-index: 1;
+}
+
+.hero-visual {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hero-visual img {
+    width: 440px;
+    max-width: 90vw;
+    height: auto;
+    border-radius: 28px;
+    border: 1px solid rgba(168, 85, 247, 0.4);
+    box-shadow: 0 0 50px rgba(138, 43, 226, 0.45), 0 0 100px rgba(90, 40, 220, 0.2);
+    object-fit: cover;
+}
+
+.hero-content{ 
+    position:relative; 
+    z-index:5; 
+    max-width:560px; 
+}
+.logo{ font-size:20px; font-weight:bold; margin-bottom:24px; display: flex; align-items: center; gap: 8px;}
+.logo-icon{ color:#a855f7; font-size:24px; }
+.hero-title{ font-size:68px; line-height:1; letter-spacing:-2px; margin-bottom:18px; font-weight: 800; }
+.hero-title span{ color:#a855f7; text-shadow: 0 0 30px rgba(168,85,247,.6); }
+.hero-subtitle{ font-size:22px; line-height:1.3; font-weight:bold; margin-bottom:18px; color: #e2e8f0; }
+.hero-description{ color:#94a3b8; font-size:15px; line-height:1.6; margin-bottom: 25px; }
+
+.enter-button{
+    padding:13px 26px; border-radius:12px; border:1px solid #bd79ff;
+    color:#fff; font-size:14px; font-weight:bold; cursor:pointer;
+    background: linear-gradient(135deg, #5420d8, #a855f7);
+    box-shadow: 0 0 25px rgba(168,85,247,.45); transition:.3s;
+}
+.enter-button:hover{ transform:translateY(-2px); box-shadow: 0 0 35px rgba(168,85,247,.7); }
+
+/* 2. AUTH MODAL OVERLAY */
+.auth-overlay{
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(3, 5, 17, 0.92);
+    backdrop-filter: blur(12px);
+    z-index: 99999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.auth-card-box{
+    position: relative;
+    z-index: 100000;
+    background: #0e132d;
+    border: 1px solid #3b4582;
+    border-radius: 20px;
+    padding: 28px;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: 0 0 60px rgba(138, 43, 226, 0.45);
+    max-height: 92vh;
+    overflow-y: auto;
+}
+
+.auth-tabs{
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 18px;
+    border-bottom: 1px solid #232952;
+    padding-bottom: 10px;
+}
+.auth-tab-btn{
+    background: none; border: none; font-size: 16px; font-weight: bold; cursor: pointer; color: #73789e;
+}
+.auth-tab-btn.active{ color: #a855f7; border-bottom: 2px solid #a855f7; padding-bottom: 6px; }
+
+/* SOCIAL BUTTONS */
+.social-auth-box{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+.social-btn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 14px;
+    background: #090e24;
+    border: 1px solid #29305c;
+    border-radius: 10px;
+    color: #e2e8f0;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.social-btn:hover{
+    background: #141b3d;
+    border-color: #8b5cf6;
+}
+.social-btn svg{ width: 18px; height: 18px; }
+
+.auth-divider{
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #64748b;
+    font-size: 11px;
+    margin: 12px 0;
+}
+.auth-divider::before, .auth-divider::after{
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #232952;
+}
+.auth-divider span{ padding: 0 10px; }
+
+.auth-field{ margin-bottom: 14px; text-align: left; }
+.auth-field label{ display: block; font-size: 11px; color: #8589a8; margin-bottom: 5px; font-weight: bold; }
+.auth-field input{
+    width: 100%; 
+    padding: 11px 14px; 
+    background: #070a20 !important; 
+    border: 1px solid #303768 !important; 
+    border-radius: 10px; 
+    color: #ffffff !important; 
+    outline: none; 
+    font-size: 14px;
+    pointer-events: auto !important;
+}
+.auth-field input:focus{ 
+    border-color: #a855f7 !important; 
+    box-shadow: 0 0 12px rgba(168, 85, 247, 0.4);
+}
+
+/* PHONE & OTP FLEX CONTAINERS */
+.phone-input-row{ display: flex; gap: 8px; }
+.phone-prefix{
+    width: 65px; padding: 10px 8px; background: #070a20; border: 1px solid #282e5b;
+    border-radius: 9px; color: #a855f7; font-weight: bold; font-size: 13px; text-align: center;
+}
+.phone-input-row input{ flex: 1; }
+.otp-row{ display: flex; gap: 8px; }
+.otp-row input{ flex: 1; }
+.otp-btn{
+    padding: 0 16px; background: #25165c; border: 1px solid #6d28d9; border-radius: 9px;
+    color: #d8b4fe; font-size: 12px; font-weight: bold; cursor: pointer; white-space: nowrap; transition: 0.2s;
+}
+.otp-btn:hover{ background: #5420d8; color: #fff; }
+
+/* 3. DASHBOARD SECTION */
+.dashboard{
+    display: none;
+    width:94%; max-width:1450px; min-height:760px; margin:60px auto;
+    grid-template-columns:230px 1fr; overflow:hidden;
+    border-radius:25px; border:1px solid #39337c; background:#080d25;
+    box-shadow: 0 0 80px rgba(90,40,220,.25);
+}
+
+/* SIDEBAR */
+.sidebar{ padding:20px 15px; background:#070b20; border-right:1px solid #252b59; }
+.brand{ font-size:18px; font-weight:bold; padding:10px; margin-bottom:18px; }
+.brand-small{ display:block; margin-top:5px; font-size:10px; color:#8589a8; }
+.nav{ list-style:none; }
+.nav button{
+    width:100%; padding:12px; margin:3px 0; border:0; border-radius:10px;
+    text-align:left; color:#b9bbd1; background:transparent; cursor:pointer; transition:.25s;
+}
+.nav button:hover{ color:#fff; background:#26165c; }
+.nav button.active{
+    color:#fff; background: linear-gradient(90deg, #5520d5, #24144f);
+    box-shadow: 0 0 20px rgba(110,50,255,.15);
+}
+
+.ai-box{ margin-top:30px; padding:15px; border-radius:14px; border:1px solid #30366b; background:#0d1432; font-size:12px; color:#c7c9db; }
+.online{ display:block; color:#4ade80; margin-top:5px; }
+
+/* MAIN */
+.main{ padding:20px; background: radial-gradient(circle at top right, rgba(94,42,205,.15), transparent 30%); }
+.topbar{ display:flex; justify-content:space-between; align-items:center; gap:15px; margin-bottom:18px; }
+.search{ width:500px; max-width:60%; padding:13px 18px; border-radius:12px; border:1px solid #303564; outline:none; background:#0c1330; color:white; }
+.search::placeholder{ color:#777b99; }
+.user-controls{ display:flex; align-items:center; gap:10px; }
+.profile{ padding:12px 18px; border-radius:12px; border:1px solid #303564; background:#0d1433; color:#ddd; font-size:13px; }
+.auth-nav-btn{ padding:10px 16px; border-radius:10px; border:1px solid #5420d8; background:#1b1542; color:#d8b4fe; font-size:12px; font-weight:bold; cursor:pointer; transition:.2s; }
+.auth-nav-btn:hover{ background:#5420d8; color:#fff; }
+
+/* PANELS */
+.panel{ display:none; min-height:600px; padding:25px; border-radius:18px; border:1px solid #34396e; background: linear-gradient(145deg, #0e1538, #090f29); }
+.panel.show{ display:block; }
+
+/* DASHBOARD BANNER */
+.welcome-card-dash {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    background: linear-gradient(135deg, #101438 0%, #150f38 100%);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    border-radius: 20px;
+    padding: 22px 28px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.dash-avatar-img {
+    width: 140px;
+    height: 140px;
+    border-radius: 16px;
+    object-fit: cover;
+    border: 1px solid rgba(168, 85, 247, 0.4);
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.35);
+    flex-shrink: 0;
+}
+
+.welcome-info h2 { font-size: 26px; margin-bottom: 4px; }
+.welcome-info p { color: #aeb1ca; font-size: 14px; margin-bottom: 12px; }
+
+.stats{ display:grid; grid-template-columns: repeat(3,1fr); gap:12px; width: 100%; }
+.stat{ padding:12px 16px; border-radius:12px; border:1px solid #2b3163; background:#0c1230; }
+.stat small{ color:#8589a8; font-size: 11px; }
+.stat strong{ display:block; margin-top:4px; font-size: 14px; }
+
+/* CARDS */
+.cards{ display:grid; grid-template-columns: repeat(3,1fr); gap:14px; }
+.card{ min-height:215px; padding:18px; border-radius:16px; border:1px solid #2b3167; background: linear-gradient(145deg, #0e1538, #090f29); transition:.25s; }
+.card:hover{ transform:translateY(-3px); border-color:#8050e8; box-shadow: 0 0 25px rgba(128,80,232,.15); }
+.card h3{ font-size:15px; margin-bottom:16px; color: #f1f5f9; }
+
+/* SKILLS */
+.skill{ margin-bottom:11px; font-size:12px; }
+.skill-head{ display:flex; justify-content:space-between; }
+.progress{ height:7px; margin-top:6px; overflow:hidden; border-radius:10px; background:#292c4d; }
+.progress span{ display:block; height:100%; border-radius:10px; background: linear-gradient(90deg, #6d35ff, #d56cff); transition: width 0.4s ease; }
+
+/* DONUT */
+.donut{ width:125px; height:125px; margin:5px auto 12px; display:grid; place-items:center; border-radius:50%; background: conic-gradient(#ff4d70 0 35%, #ffa31a 35% 65%, #28d6a0 65% 100%); transition: 0.3s; }
+.donut-inner{ width:87px; height:87px; display:grid; place-items:center; border-radius:50%; background:#0c1230; font-size:25px; font-weight:bold; }
+.center{ text-align:center; color:#9699b3; font-size:12px; }
+
+/* GRAPH */
+.graph{ height:125px; display:flex; align-items:end; gap:8px; padding:10px; }
+.graph span{ flex:1; border-radius: 5px 5px 0 0; background: linear-gradient(#b44cff, #4520bd); }
+
+/* LISTS */
+.roadmap, .recommendations, .jobs{ list-style:none; }
+.roadmap li, .recommendations li, .jobs li{ padding:11px 0; border-bottom:1px solid #25294f; font-size:12px; }
+.badge, .job-match{ float:right; color:#55e7ad; font-weight:bold; }
+
+/* QUICK ACTIONS */
+.quick-actions{ grid-column:1 / -1; display:grid; grid-template-columns: repeat(4,1fr); gap:10px; margin-top: 5px; }
+.quick-actions button{ padding:14px; border-radius:12px; border:1px solid #33366e; background:#10183c; color:#fff; cursor:pointer; transition:.25s; font-size: 13px; }
+.quick-actions button:hover{ transform:translateY(-3px); border-color:#a855f7; box-shadow: 0 0 20px rgba(168,85,247,.25); }
+
+/* FORM & BADGES */
+.form-box{ background: #0c1232; padding: 20px; border-radius: 14px; border: 1px solid #2b3167; margin-top: 15px; }
+.form-box label{ display: block; font-size: 12px; color: #8589a8; margin-bottom: 6px; }
+.form-box select, .form-box input{ width: 100%; padding: 12px; background: #070a20; border: 1px solid #30366b; border-radius: 8px; color: #fff; margin-bottom: 14px; outline: none; }
+
+/* SIMULATOR & SKILL GAP STYLES */
+.sim-box {
+    background: #111738;
+    border: 1px solid #4a289d;
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 20px;
+}
+.gap-item-card {
+    background: rgba(14, 21, 56, 0.7);
+    border: 1px solid #2a3163;
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: 0.2s;
+}
+.gap-item-card:hover { border-color: #8b5cf6; }
+
+/* RESPONSIVE */
+@media(max-width:1100px){
+    .hero{ flex-direction: column; justify-content: center; text-align: center; gap: 30px; }
+    .hero-content{ margin: 0 auto; }
+    .hero-visual img{ width: 320px; }
+    .cards{ grid-template-columns: repeat(2,1fr); } 
+    .dashboard{ grid-template-columns:210px 1fr; } 
+}
+@media(max-width:800px){ 
+    .hero-title{ font-size:48px; } 
+    .dashboard{ grid-template-columns:1fr; } 
+    .sidebar{ display:none; } 
+    .stats, .cards{ grid-template-columns:1fr; } 
+    .quick-actions{ grid-template-columns:1fr 1fr; } 
+    .welcome-card-dash{ flex-direction: column; text-align: center; }
+}
+
+/* CAREERTWIN-X LIGHT THEME: soft sky blue, mint and warm ivory (no gradient backgrounds) */
+:root { color-scheme: light; --ink:#24344d; --muted:#66758b; --line:#dce6f0; --paper:#ffffff; --page:#f4f8fc; --blue:#4778c7; --blue-soft:#e8f1ff; --mint:#e6f7f1; --mint-ink:#187a62; --coral:#fff0e9; }
+body { background:#f4f7fb !important; color:var(--ink) !important; }
+.hero { background:#edf5ff !important; }
+.hero::before,.hero::after { display:none !important; }
+.hero-content { color:#24344d; }
+.logo-icon,.hero-title span { color:#4778c7 !important; text-shadow:none !important; }
+.hero-title { color:#263b59; }
+.hero-subtitle { color:#3d536f !important; }
+.hero-description { color:#66758b !important; }
+.hero-visual img { border:5px solid #fff !important; box-shadow:0 16px 40px rgba(65,103,157,.16) !important; }
+.enter-button { background:#4778c7 !important; color:#fff !important; border:1px solid #4778c7 !important; box-shadow:0 5px 14px rgba(71,120,199,.18) !important; }
+.enter-button:hover { background:#3567b4 !important; box-shadow:0 8px 18px rgba(71,120,199,.23) !important; }
+.auth-overlay { background:rgba(35,52,77,.38) !important; backdrop-filter:blur(7px); }
+.auth-card-box { background:#fff !important; color:var(--ink) !important; border:1px solid var(--line) !important; box-shadow:0 18px 55px rgba(40,63,95,.18) !important; }
+.auth-tabs { border-color:var(--line) !important; }
+.auth-tab-btn { color:#77869a !important; }
+.auth-tab-btn.active { color:#4778c7 !important; border-color:#4778c7 !important; }
+.social-btn { background:#f7f9fc !important; border-color:var(--line) !important; color:var(--ink) !important; }
+.social-btn:hover { background:#edf4ff !important; border-color:#9bb9e7 !important; }
+.auth-field label,.form-box label { color:#66758b !important; }
+.auth-field input,.phone-prefix,.search,.form-box select,.form-box input { background:#fff !important; color:#24344d !important; border:1px solid #cfdbe8 !important; }
+.auth-field input:focus,.search:focus,.form-box input:focus,.form-box select:focus { border-color:#7198d2 !important; box-shadow:0 0 0 3px rgba(71,120,199,.12) !important; }
+.otp-btn,.auth-nav-btn { background:#e8f1ff !important; color:#315f9f !important; border:1px solid #cbdcf5 !important; }
+.otp-btn:hover,.auth-nav-btn:hover { background:#d9e8ff !important; color:#244c83 !important; }
+.dashboard { background:#fff !important; border:1px solid #dce6f0 !important; box-shadow:0 14px 45px rgba(40,63,95,.09) !important; }
+.sidebar { background:#f7f9fc !important; border-color:#e1e8f0 !important; }
+.brand,.main,.panel,.welcome-card-dash,.card,.stat,.ai-box,.form-box,.sim-box,.gap-item-card { color:var(--ink) !important; }
+.brand-small,.ai-box,.welcome-info p,.stat small,.center { color:#66758b !important; }
+.nav button { color:#52647b !important; }
+.nav button:hover { color:#315f9f !important; background:#e8f1ff !important; }
+.nav button.active { color:#315f9f !important; background:#e3eeff !important; box-shadow:none !important; }
+.ai-box { background:#eaf7f3 !important; border:1px solid #ccece2 !important; }
+.online { color:#168467 !important; }
+.main { background:#f8fafd !important; }
+.search,.profile { background:#fff !important; color:#24344d !important; border-color:#d5e0ec !important; }
+.search::placeholder { color:#8997a9 !important; }
+.profile { color:#52647b !important; }
+.panel { background:#fff !important; border-color:#e0e8f1 !important; }
+.welcome-card-dash { background:#edf5ff !important; border:1px solid #d7e6fb !important; box-shadow:none !important; }
+.dash-avatar-img { border-color:#fff !important; box-shadow:0 5px 18px rgba(65,103,157,.12) !important; }
+.stat { background:#fff !important; border-color:#e0e8f1 !important; }
+.card { background:#fff !important; border-color:#e0e8f1 !important; box-shadow:0 3px 12px rgba(40,63,95,.035); }
+.card:hover { border-color:#a9c5ed !important; box-shadow:0 8px 22px rgba(40,85,145,.09) !important; }
+.card h3 { color:#2c4667 !important; }
+.progress { background:#e7edf5 !important; }
+.progress span { background:#6b9bdc !important; }
+.donut-inner { background:#fff !important; color:#24344d !important; }
+.graph span { background:#8eb3e7 !important; }
+.roadmap li,.recommendations li,.jobs li { border-color:#e6edf4 !important; }
+.badge,.job-match { color:#168467 !important; }
+.quick-actions button { background:#edf5ff !important; color:#315f9f !important; border-color:#d5e4f8 !important; }
+.quick-actions button:hover { background:#e1edff !important; border-color:#a9c5ed !important; box-shadow:0 5px 15px rgba(71,120,199,.1) !important; }
+.form-box { background:#f7f9fc !important; border-color:#e0e8f1 !important; }
+.sim-box { background:#f0f7ff !important; border-color:#d8e8fa !important; }
+.gap-item-card { background:#fff !important; border-color:#e0e8f1 !important; }
+.gap-item-card:hover { border-color:#a9c5ed !important; }
+button { transition:background-color .2s ease, transform .2s ease, box-shadow .2s ease; }
+@media(max-width:800px){ .hero { padding:35px 6% !important; height:auto !important; min-height:100vh; } .hero-title { color:#263b59 !important; } }
+
+
+/* Official real-company directory */
+.official-directory-wrap{background:#f7faff;border:1px solid #dce8f6;border-radius:18px;padding:20px;margin:0 0 22px;}
+.official-directory-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:16px;}
+.official-directory-head h3{font-size:20px;color:#233d60;margin-bottom:5px;}
+.official-directory-head p{color:#687b93;font-size:13px;line-height:1.55;max-width:720px;}
+.directory-pill{display:inline-flex;align-items:center;border:1px solid #c9dcf6;background:#e9f2ff;color:#315f9f;padding:6px 10px;border-radius:999px;font-size:11px;font-weight:700;white-space:nowrap;}
+.official-company-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:13px;}
+.official-company-card{background:#fff;border:1px solid #e0e9f4;border-radius:15px;padding:16px;display:flex;flex-direction:column;min-height:210px;box-shadow:0 5px 18px rgba(43,76,120,.045);transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;}
+.official-company-card:hover{transform:translateY(-2px);border-color:#a9c5ed;box-shadow:0 10px 25px rgba(43,76,120,.09);}
+.official-company-top{display:flex;align-items:center;gap:11px;margin-bottom:12px;}
+.official-company-mark{width:43px;height:43px;flex:0 0 43px;border-radius:13px;background:#eaf2ff;color:#315f9f;display:grid;place-items:center;font-weight:800;font-size:13px;letter-spacing:-.3px;}
+.official-company-name{font-size:15px;line-height:1.3;color:#243b59;font-weight:750;}
+.official-company-industry{font-size:11px;color:#718198;margin-top:4px;line-height:1.4;}
+.official-company-focus{font-size:12px;color:#60728a;line-height:1.55;margin-bottom:14px;flex:1;}
+.official-company-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.official-company-region{font-size:10px;color:#75859a;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+.official-company-link{display:inline-flex;align-items:center;gap:5px;text-decoration:none;background:#4778c7;color:#fff!important;border-radius:9px;padding:9px 11px;font-size:11px;font-weight:700;}
+.official-company-link:hover{background:#3567b4;}
+.directory-disclaimer{font-size:11px;color:#7b8798;margin-top:13px;line-height:1.5;}
+
+</style>
+</head>
+
+<body>
+
+<!-- 1. FIRST SCREEN: OVERVIEW / HERO PROFILE -->
+<section class="hero" id="home">
+    <div class="hero-content">
+        <div class="logo">
+            <span class="logo-icon">✦</span> CareerTwin-X
+        </div>
+        <h1 class="hero-title">CareerTwin-<span>X</span></h1>
+        <div class="hero-subtitle">
+            Intelligence Career Readiness<br>& Skill Gap Engine
+        </div>
+        <p class="hero-description">
+            Your AI-powered Career Twin that analyzes your skills, projects and goals, identifies skill gaps and builds your personalized career roadmap.
+        </p>
+        <button class="enter-button" onclick="openAuthModal()">Enter →</button>
+    </div>
+
+    <div class="hero-visual">
+        <img src="{{ url_for('static', filename='hero-avatar.png') }}" alt="CareerTwin AI Intelligence">
+    </div>
+</section>
+
+<!-- 2. AUTH MODAL OVERLAY -->
+<div class="auth-overlay" id="authModal">
+    <div class="auth-card-box">
+        <div class="auth-tabs">
+            <button class="auth-tab-btn active" id="btnTabLogin" type="button" onclick="switchAuthTab('login')">Login</button>
+            <button class="auth-tab-btn" id="btnTabSignup" type="button" onclick="switchAuthTab('signup')">Sign Up</button>
+        </div>
+
+        <div class="social-auth-box">
+            <button type="button" class="social-btn" onclick="socialAuth('Google')">
+                <svg viewBox="0 0 24 24"><path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.9C6.2 7.3 8.9 5 12 5z"/><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.7-.2-2.3H12v4.6h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.9z"/><path fill="#FBBC05" d="M5.3 14.7c-.2-.7-.4-1.5-.4-2.7s.2-2 .4-2.7L1.6 6.4C.6 8.4 0 10.6 0 13s.6 4.6 1.6 6.6l3.7-2.9z"/><path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3.1 0-5.8-2.3-6.7-5.3L1.6 16C3.5 19.8 7.4 23 12 23z"/></svg>
+                Sign In with Google
+            </button>
+            <button type="button" class="social-btn" onclick="socialAuth('Apple')">
+                <svg viewBox="0 0 24 24" fill="#ffffff"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.84c.66-.82 1.11-1.96.99-3.1-.96.04-2.12.64-2.8 1.44-.6.69-1.13 1.82-1 2.94 1.07.08 2.15-.46 2.81-1.28z"/></svg>
+                Sign In with Apple
+            </button>
+        </div>
+
+        <div class="auth-divider"><span>OR CONTINUE WITH EMAIL</span></div>
+
+        <!-- FORM WITH ACCESSIBLE INPUTS -->
+        <form id="authMainForm" onsubmit="return processEmailAuth(event)">
+            <div class="auth-field" id="signupNameGroup" style="display: none;">
+                <label for="authUserName">FULL NAME</label>
+                <input type="text" id="authUserName" name="fullname" placeholder="e.g. Srishti Singh">
+            </div>
+
+            <div class="auth-field">
+                <label for="authUserEmail">EMAIL ADDRESS</label>
+                <input type="email" id="authUserEmail" name="email" required placeholder="name@domain.com">
+            </div>
+
+            <div class="auth-field">
+                <label for="authUserPass">PASSWORD</label>
+                <input type="password" id="authUserPass" name="password" required placeholder="••••••••">
+            </div>
+
+            <button type="submit" id="authSubmitBtn" class="enter-button" style="width:100%; margin-top: 4px;">
+                Continue with Email ✦
+            </button>
+        </form>
+
+        <div class="auth-divider"><span>OR CONTINUE WITH PHONE (REAL SMS)</span></div>
+
+        <div id="phoneAuthContainer">
+            <div class="auth-field">
+                <label for="authPhone">PHONE NUMBER</label>
+                <div class="phone-input-row">
+                    <input type="text" class="phone-prefix" value="+91" readonly tabindex="-1">
+                    <input type="tel" id="authPhone" maxlength="10" placeholder="Enter 10-digit number">
+                    <button type="button" id="sendPhoneOtpBtn" class="otp-btn" onclick="sendPhoneOtp()">Send OTP</button>
+                </div>
+            </div>
+
+            <div class="auth-field" id="phoneOtpGroup" style="display: none;">
+                <label for="authPhoneOtp">VERIFICATION OTP</label>
+                <div class="otp-row">
+                    <input type="text" id="authPhoneOtp" maxlength="6" placeholder="Enter 6-digit SMS OTP">
+                    <button type="button" id="verifyPhoneOtpBtn" class="otp-btn" onclick="verifyPhoneOtp()">Verify & Enter</button>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" onclick="closeAuthModal()" style="width: 100%; background: none; border: none; color: #64748b; font-size: 12px; margin-top: 14px; cursor: pointer;">Cancel</button>
+    </div>
+</div>
+
+<!-- 3. DASHBOARD SECTION -->
+<section class="dashboard" id="dashboard">
+    <aside class="sidebar">
+        <div class="brand">
+            ✦ CareerTwin-X
+            <span class="brand-small">INTELLIGENCE ENGINE</span>
+        </div>
+
+        <nav class="nav">
+            <button class="active" onclick="showPanel('dashboardPanel',this)">🏠 Dashboard</button>
+            <button onclick="showPanel('careerTwinPanel',this)">👤 Career Twin</button>
+            <button onclick="showPanel('skillPanel',this)">◈ Skill Analysis</button>
+            <button onclick="showPanel('gapPanel',this)">🎯 Skill Gap</button>
+            <button onclick="showPanel('roadmapPanel',this)">🛣 Roadmap</button>
+            <button onclick="showPanel('projectPanel',this)">📁 Projects</button>
+            <button onclick="showPanel('learningPanel',this)">📚 Learning Hub</button>
+            <button onclick="showPanel('resumePanel',this)">📄 Resume Analyzer</button>
+            <button onclick="showPanel('jobPanel',this)">💼 Job Matches</button>
+            <button onclick="showPanel('mentorPanel',this)">🤖 AI Mentor</button>
+            <button onclick="showPanel('settingsPanel',this)">⚙ Settings</button>
+        </nav>
+
+        <div class="ai-box">
+            ✦ AI Assistant
+            <span class="online">● Online</span>
+        </div>
+    </aside>
+
+    <div class="main">
+        <div class="topbar">
+            <input class="search" placeholder="Search skills, benchmarks, jobs...">
+            <div class="user-controls">
+                <!-- SWITCH TO ROJGAR SETU RECRUITER PORTAL BUTTON -->
+                <button class="auth-nav-btn" id="portalSwitchBtn" style="border-color: #22c55e; color: #4ade80; background: rgba(34, 197, 94, 0.12);" onclick="togglePortalMode()">
+                    🏢 Switch to Rojgar Setu (Recruiter)
+                </button>
+                <div class="profile" id="topProfileBadge">Welcome 👋</div>
+                <button class="auth-nav-btn" onclick="handleLogout()">Sign Out</button>
+            </div>
+        </div>
+
+        <!-- 1. DASHBOARD OVERVIEW PANEL -->
+        <div class="panel show" id="dashboardPanel">
+            <div class="welcome-card-dash">
+                <img src="{{ url_for('static', filename='hero-avatar.png') }}" alt="AI Twin" class="dash-avatar-img">
+                <div class="welcome-info" style="width: 100%;">
+                    <h2 id="dashWelcomeHeading">Welcome back ✦</h2>
+                    <p>Aspiring Software Developer — let's continue building your digital career twin.</p>
+                    <div class="stats">
+                        <div class="stat"><small>Target Role</small><strong id="topTargetRole">Software Developer</strong></div>
+                        <div class="stat"><small>Career Readiness</small><strong id="topScore">72% MATCH</strong></div>
+                        <div class="stat"><small>Career Twin Status</small><strong style="color: #4ade80;">Active</strong></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cards">
+                <div class="card">
+                    <h3>Skill Overview</h3>
+                    <div class="skill"><div class="skill-head"><span>Python</span><span id="statPython">85%</span></div><div class="progress"><span id="barPython" style="width:85%"></span></div></div>
+                    <div class="skill"><div class="skill-head"><span>DSA</span><span id="statDSA">70%</span></div><div class="progress"><span id="barDSA" style="width:70%"></span></div></div>
+                    <div class="skill"><div class="skill-head"><span>SQL</span><span id="statSQL">65%</span></div><div class="progress"><span id="barSQL" style="width:65%"></span></div></div>
+                    <div class="skill"><div class="skill-head"><span>Git & GitHub</span><span id="statGit">75%</span></div><div class="progress"><span id="barGit" style="width:75%"></span></div></div>
+                </div>
+
+                <div class="card">
+                    <h3>Skill Gap Analysis</h3>
+                    <div class="donut"><div class="donut-inner" id="totalGapsDisplay">8</div></div>
+                    <div class="center">Total Missing Gaps Identified</div>
+                </div>
+
+                <div class="card">
+                    <h3>Learning Progress</h3>
+                    <div class="graph">
+                        <span style="height:35%"></span>
+                        <span style="height:55%"></span>
+                        <span style="height:70%"></span>
+                        <span style="height:85%"></span>
+                    </div>
+                    <div class="center">Week 1 to Week 4 Progress</div>
+                </div>
+
+                <div class="card">
+                    <h3>Career Roadmap</h3>
+                    <ul class="roadmap" id="dashRoadmapPreview">
+                        <li>Master DSA (Advanced) <span class="badge">In Progress</span></li>
+                        <li>System Design Fundamentals <span class="badge">Next</span></li>
+                        <li>Build 3 Capstone Projects <span class="badge">Upcoming</span></li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Recommended for You</h3>
+                    <ul class="recommendations" id="dashLearningPreview">
+                        <li>Complete Python Course <span class="badge">Coursera</span></li>
+                        <li>50 DSA Problem Challenge <span class="badge">LeetCode</span></li>
+                        <li>Full Stack Web Architecture <span class="badge">FreeCodeCamp</span></li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Top Job Matches</h3>
+                    <ul class="jobs" id="dashJobsPreview">
+                        <li>Software Developer <span class="job-match">92% Match</span></li>
+                        <li>Backend Engineer <span class="job-match">88% Match</span></li>
+                        <li>Data Engineer <span class="job-match">78% Match</span></li>
+                    </ul>
+                </div>
+
+                <div class="quick-actions">
+                    <button onclick="showPanel('skillPanel', document.querySelectorAll('.nav button')[2])">◈ Test Your Skills</button>
+                    <button onclick="showPanel('gapPanel', document.querySelectorAll('.nav button')[3])">🎯 View Detailed Gaps</button>
+                    <button onclick="showPanel('roadmapPanel', document.querySelectorAll('.nav button')[4])">🛣 View Full Roadmap</button>
+                    <button onclick="showPanel('jobPanel', document.querySelectorAll('.nav button')[8])">💼 Explore Jobs</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. SKILL ANALYSIS PANEL -->
+        <div class="panel" id="skillPanel">
+            <h2>◈ Vector Skill Assessment Engine</h2>
+            <p style="color:#aeb1ca; margin-top:5px;">Select your career track and enter your skills to compare them against an explicit role benchmark.</p>
+
+            <div class="form-box">
+                <label>TARGET CAREER TRACK</label>
+                <select id="evalRole">
+                    {% for key, name in roles.items() %}
+                        <option value="{{ key }}">{{ name }}</option>
+                    {% endfor %}
+                </select>
+
+                <label>ENTER ACQUIRED SKILLS (COMMA SEPARATED)</label>
+                <input type="text" id="evalSkills" placeholder="e.g. Python, SQL, Git, OOPs, DSA">
+
+                <button type="button" id="evalBtnMain" class="enter-button" style="width: 100%; margin-top: 5px;" onclick="runBackendAnalysis(this)">
+                    Run AI Vector Assessment ✦
+                </button>
+            </div>
+
+            <div id="liveResultBox" style="display:none; margin-top:20px;">
+                <div style="background:#0c1432; padding: 22px; border-radius: 14px; border: 1px solid #2b3167;">
+                    <h3 id="resRoleTitle" style="color: #a855f7;">Role Analysis Complete</h3>
+                    <p style="margin-top: 8px; font-size: 15px;">Required-Skill Coverage: <strong id="resScore" style="color:#4ade80; font-size:24px;">0%</strong></p>
+                    <p id="scoreExplanation" style="color: #94a3b8; font-size: 13px; margin-top: 5px;">Score explanation will appear after assessment.</p>
+                    <p style="color:#94a3b8;font-size:11px;margin-top:5px">This is a checklist coverage indicator, not a probability of getting hired.</p>
+                    
+                    <button class="enter-button" style="margin-top: 15px; font-size: 12px; padding: 10px 18px;" onclick="showPanel('gapPanel', document.querySelectorAll('.nav button')[3])">
+                        Inspect Missing Skill Gaps & Forecast →
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. DETAILED SKILL GAP & WHAT-IF SIMULATOR PANEL -->
+        <div class="panel" id="gapPanel">
+            <h2>🎯 Detailed Skill Gap Analysis & Simulation</h2>
+            <p style="color:#aeb1ca; margin-top:5px; margin-bottom: 20px;">Deterministic analysis of missing skills against real-world industry benchmarks.</p>
+
+            <!-- WHAT-IF SIMULATION CARD -->
+            <div class="sim-box">
+                <h3 style="color: #d8b4fe; margin-bottom: 8px;">🔮 "What-If" Career Forecasting Simulation</h3>
+                <p style="color: #94a3b8; font-size: 13px; margin-bottom: 12px;">Explore a hypothetical skill-coverage scenario. This is not a hiring-probability prediction.</p>
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <span style="font-size: 13px; color: #cbd5e1;">Simulate mastering:</span>
+                    <button class="auth-nav-btn" style="padding: 6px 12px;" onclick="simulateSkillImpact('System Design', 14)">+ System Design</button>
+                    <button class="auth-nav-btn" style="padding: 6px 12px;" onclick="simulateSkillImpact('Docker & Containers', 10)">+ Docker</button>
+                    <button class="auth-nav-btn" style="padding: 6px 12px;" onclick="simulateSkillImpact('Advanced Algorithms', 12)">+ Advanced Algorithms</button>
+                </div>
+                <div id="simAlertBox" style="display: none; margin-top: 12px; padding: 10px 14px; border-radius: 8px; background: rgba(74, 222, 128, 0.1); border: 1px solid #4ade80; color: #86efac; font-size: 13px;"></div>
+            </div>
+
+            <div id="gapContainerList">
+                <p style="color: #94a3b8; font-size: 13px;">Run vector assessment from the Skill Analysis tab to view specific missing skill tags.</p>
+            </div>
+        </div>
+
+        <!-- 4. ROADMAP PANEL -->
+        <div class="panel" id="roadmapPanel">
+            <h2>🛣 Dynamic Career Roadmap</h2>
+            <p style="color:#aeb1ca; margin-top:5px; margin-bottom: 20px;">AI-sequenced learning path based on your missing competency gaps.</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 15px;" id="roadmapStepContainer">
+                <div style="background: #0d1433; padding: 18px; border-radius: 12px; border-left: 4px solid #a855f7;">
+                    <h4 style="color: #c084fc;">Phase 1: Core Fundamentals & Data Structures</h4>
+                    <p style="color: #94a3b8; font-size: 13px; margin-top: 4px;">Time Complexity, HashMaps, Trees, Graphs, and Object-Oriented Design in Python.</p>
+                </div>
+                <div style="background: #0d1433; padding: 18px; border-radius: 12px; border-left: 4px solid #6366f1;">
+                    <h4 style="color: #818cf8;">Phase 2: Database Architecture & High-Performance APIs</h4>
+                    <p style="color: #94a3b8; font-size: 13px; margin-top: 4px;">SQL Indexing, Schema Normalization, REST API design, and asynchronous microservices.</p>
+                </div>
+                <div style="background: #0d1433; padding: 18px; border-radius: 12px; border-left: 4px solid #38bdf8;">
+                    <h4 style="color: #7dd3fc;">Phase 3: System Scalability & Production Deployment</h4>
+                    <p style="color: #94a3b8; font-size: 13px; margin-top: 4px;">Docker containerization, CI/CD pipeline automation, and distributed caching strategies.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. OTHER SIDEBAR PANELS -->
+        <div class="panel" id="careerTwinPanel">
+            <h2>👤 Career Twin Profile</h2>
+            <p style="color:#aeb1ca; margin-top:5px; margin-bottom: 20px;">Your verified digital twin persona representation.</p>
+            <div class="form-box">
+                <p><strong>Twin ID:</strong> CTX-2026-992</p>
+                <p style="margin-top: 6px;"><strong>Status:</strong> Active & Synchronized</p>
+                <p style="margin-top: 6px;"><strong>Matching method:</strong> Explainable required-skill coverage checklist</p>
+                <h3 style="margin-top:18px;">Student Skills Profile</h3>
+                <p style="color:#aeb1ca;margin:6px 0 12px;">Demo profile: edit the skills you want to compare with company vacancies.</p>
+                <label for="studentDemoSkills">YOUR SKILLS (comma-separated)</label>
+                <input id="studentDemoSkills" type="text" value="Python, SQL, HTML, Git" style="width:100%;padding:11px 14px;background:#070a20;border:1px solid #303768;border-radius:10px;color:#fff;margin:8px 0 12px;">
+                <label for="studentDemoGoal">CAREER GOAL</label>
+                <input id="studentDemoGoal" type="text" value="Python Developer Intern" style="width:100%;padding:11px 14px;background:#070a20;border:1px solid #303768;border-radius:10px;color:#fff;margin:8px 0 12px;">
+                <button type="button" class="enter-button" style="width:100%;" onclick="saveDemoStudentSkills()">Save Skills & Find Matching Jobs</button>
+                <p id="studentDemoStatus" style="margin-top:10px;color:#86efac;font-size:13px;"></p>
+            </div>
+        </div>
+
+        <div class="panel" id="projectPanel">
+            <h2>📁 Projects & Portfolio Readiness</h2>
+            <p style="color:#aeb1ca; margin-top:5px; margin-bottom: 20px;">Apne real projects ka GitHub repository link add karein. Recruiters aapka code, README aur commits review kar sakte hain. GitHub link portfolio evidence hai, automatic verification ya hiring guarantee nahi.</p>
+            <div class="form-box" style="margin-bottom:18px;">
+                <h3 style="margin-bottom:12px;">➕ Add Your Project / Proof of Work</h3>
+                <label for="portfolioProjectTitle">PROJECT TITLE *</label>
+                <input id="portfolioProjectTitle" maxlength="120" placeholder="e.g. Student Attendance System" style="width:100%;padding:11px;margin:7px 0 12px;border-radius:8px;">
+                <label for="portfolioGithubUrl">GITHUB REPOSITORY URL *</label>
+                <input id="portfolioGithubUrl" type="url" placeholder="https://github.com/username/project-name" style="width:100%;padding:11px;margin:7px 0 12px;border-radius:8px;">
+                <label for="portfolioTechStack">TECH STACK</label>
+                <input id="portfolioTechStack" maxlength="300" placeholder="Python, Flask, SQLite, HTML/CSS" style="width:100%;padding:11px;margin:7px 0 12px;border-radius:8px;">
+                <label for="portfolioDescription">WHAT DID YOU BUILD?</label>
+                <textarea id="portfolioDescription" maxlength="1200" rows="3" placeholder="Project ka purpose aur aapne kya implement kiya..." style="width:100%;padding:11px;margin:7px 0 12px;border-radius:8px;"></textarea>
+                <label for="portfolioDemoUrl">LIVE DEMO URL (OPTIONAL)</label>
+                <input id="portfolioDemoUrl" type="url" placeholder="https://your-demo.example.com" style="width:100%;padding:11px;margin:7px 0 12px;border-radius:8px;">
+                <button type="button" class="enter-button" onclick="addPortfolioProject()">Save Project to My Portfolio</button>
+                <p id="portfolioProjectStatus" style="margin-top:10px;font-size:13px;"></p>
+            </div>
+            <h3 style="margin:14px 0;">Your Submitted Projects</h3>
+            <div id="studentProjectsList" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-bottom:22px;"><p style="color:#94a3b8;">Log in to load your portfolio.</p></div>
+            <div class="cards">
+                <div class="card">
+                    <h3>AI Vector Retrieval Engine</h3>
+                    <p style="color: #94a3b8; font-size: 13px;">Build a custom document search engine using cosine similarity.</p>
+                    <span class="badge" style="float:none; display:inline-block; margin-top:15px;">Target: Advanced</span>
+                </div>
+                <div class="card">
+                    <h3>Microservice Job Gateway</h3>
+                    <p style="color: #94a3b8; font-size: 13px;">Deploy containerized REST microservices with caching.</p>
+                    <span class="badge" style="float:none; display:inline-block; margin-top:15px;">Target: Intermediate</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel" id="learningPanel">
+            <h2>📚 Curated Learning Hub</h2>
+            <p style="color:#aeb1ca; margin-top:5px; margin-bottom: 20px;">Targeted resources directly addressing your identified skill gaps.</p>
+            <ul class="recommendations">
+                <li>System Design Primer - In-depth Architectural Guide <span class="badge">Open Source</span></li>
+                <li>Advanced Python Data Structures & Algorithmic Patterns <span class="badge">FreeCodeCamp</span></li>
+                <li>Relational Query Optimization & Indexing Deep Dive <span class="badge">Coursera</span></li>
+            </ul>
+        </div>
+
+        <!-- RESUME ANALYZER PANEL -->
+        <div class="panel" id="resumePanel">
+            <h2>📄 AI Resume Analyzer</h2>
+            <p style="color:#aeb1ca; margin-top:5px; margin-bottom: 20px;">Verify resume structure against deterministic vector benchmarks.</p>
+            <div class="form-box">
+                <label for="resumeFileInput">UPLOAD RESUME (PDF OR TXT)</label>
+                <input type="file" id="resumeFileInput" accept=".pdf,.txt" style="color:#94a3b8;">
+                <button type="button" id="resumeUploadBtn" class="enter-button" style="width: 100%; margin-top: 10px;" onclick="uploadAndAnalyzeResume()">
+                    Parse & Match Competencies ✦
+                </button>
+            </div>
+
+            <div id="resumeAnalysisBox" style="display: none; margin-top: 20px; background: #0c1432; padding: 20px; border-radius: 14px; border: 1px solid #2b3167;">
+                <h3 style="color: #a855f7; margin-bottom: 8px;">Resume Extraction Complete ✦</h3>
+                <p style="font-size: 13px; color: #94a3b8;">Extracted Competencies from Document:</p>
+                <div id="extractedSkillsList" style="margin: 12px 0; display: flex; flex-wrap: wrap; gap: 8px;"></div>
+                <button type="button" class="enter-button" style="font-size: 12px; padding: 10px 18px;" onclick="showPanel('skillPanel', document.querySelectorAll('.nav button')[2])">
+                    View Live Skill Gap Analysis →
+                </button>
+            </div>
+        </div>
+
+        <!-- ROJGAR SETU JOB MATCH PANEL -->
+        <div class="panel" id="jobPanel">
+            <h2>💼 Rojgar Setu - Skill-Based Opportunity Matches</h2>
+            <p style="color:#aeb1ca; margin-top:5px; margin-bottom: 20px;">Matches are calculated from saved company job requirements and your entered skills. Skill coverage is not a hiring probability; company verification is shown separately.</p>
+            <div id="jobMatchesContainer" style="display: flex; flex-direction: column; gap: 12px;">
+                <p style="color:#94a3b8">No saved job requirements loaded yet. Open Career Twin to save your skills, then check the recruiter section for posted requirements.</p>
+            </div>
+        </div>
+
+        <!-- 6. INTERACTIVE AI MENTOR PANEL -->
+        <div class="panel" id="mentorPanel">
+            <h2>🤖 Interactive AI Mentor</h2>
+            <p style="color:#aeb1ca; margin-top:5px; margin-bottom: 16px;">Direct real-time guidance on interview preparations, system design, and career gap closure.</p>
+
+            <div style="background: #090e24; border: 1px solid #282f5b; border-radius: 14px; padding: 18px; display: flex; flex-direction: column; height: 480px;">
+                <!-- Chat History Container -->
+                <div id="mentorChatHistory" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding-right: 8px; margin-bottom: 14px;">
+                    <div style="background: #111738; border: 1px solid #3b4279; border-left: 4px solid #a855f7; padding: 12px 16px; border-radius: 10px; max-width: 85%;">
+                        <strong style="color: #c084fc; font-size: 12px; display: block; margin-bottom: 4px;">✦ CareerTwin-X AI Mentor</strong>
+                        <p style="font-size: 13px; color: #e2e8f0; line-height: 1.5;">
+                            Hello! Main aapka AI Career Mentor hoon. Aap mujhse target skills, roadmap planning, interview questions (jaise DSA ya System Design), ya resume improvement ke bare me pooch sakte hain.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Prompt Suggestions -->
+                <div style="display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap;">
+                    <button type="button" class="otp-btn" style="padding: 4px 10px; font-size: 11px;" onclick="sendSuggestedPrompt('System design basics kaise start karein?')">💡 System Design Roadmap</button>
+                    <button type="button" class="otp-btn" style="padding: 4px 10px; font-size: 11px;" onclick="sendSuggestedPrompt('Top Python backend interview questions?')">💡 Backend Interview Prep</button>
+                    <button type="button" class="otp-btn" style="padding: 4px 10px; font-size: 11px;" onclick="sendSuggestedPrompt('Mere skill gaps ko 30 days me kaise cover karein?')">💡 30-Day Fastrack Strategy</button>
+                </div>
+
+                <!-- Chat Input Form -->
+                <form id="mentorForm" onsubmit="handleMentorChat(event)" style="display: flex; gap: 10px;">
+                    <input type="text" id="mentorInput" placeholder="Ask your question here (e.g., DSA patterns, Python backend tips)..." style="flex: 1; padding: 12px 14px; background: #070a20; border: 1px solid #303768; border-radius: 10px; color: #fff; outline: none; font-size: 13px;" autocomplete="off">
+                    <button type="submit" id="mentorSendBtn" class="enter-button" style="padding: 10px 20px; font-size: 13px;">Ask ✦</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 7. ROJGAR SETU RECRUITER & EMPLOYER PORTAL PANEL -->
+        <div class="panel" id="recruiterPanel">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #252b59; padding-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                <div>
+                    <h2 style="color: #4ade80;">🏢 Rojgar Setu | Enterprise Hiring Engine</h2>
+                    <p style="color:#aeb1ca; margin-top:4px;">Review applications submitted to your company's jobs. Skill coverage helps explain fit but is not cryptographic verification or a hiring guarantee.</p>
+                </div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;"><button class="otp-btn" onclick="openCompanyModal()">+ Register MSME Company</button><button class="enter-button" style="background: linear-gradient(135deg, #16a34a, #22c55e); border: none;" onclick="openJobPostModal()">+ Post New Requirement</button></div>
+            </div>
+
+            <!-- RECRUITER STATS ROW -->
+            <div class="stats" style="margin-bottom: 24px;">
+                <div class="stat"><small>Saved Applications</small><strong id="recActiveCandidatesCount">0 Applications</strong></div>
+                <div class="stat"><small>Average Skill Coverage</small><strong id="recMeanScore" style="color:#4ade80">—</strong></div>
+                <div class="stat"><small>Company Verification</small><strong id="recCompanyStatus" style="color:#fbbf24">Pending / Sign in</strong></div>
+            </div>
+
+            <div style="background:#0c1432;border:1px solid #2b3167;border-radius:14px;padding:16px;margin-bottom:22px;">
+                <h3 style="color:#f1f5f9;margin-bottom:8px;">🔐 Company account login</h3>
+                <p style="color:#94a3b8;font-size:12px;margin-bottom:10px;">Register once or log in with the company email/password to post jobs and review applications for that company.</p>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                    <input id="companyLoginEmail" type="email" placeholder="Company email" style="flex:1;min-width:180px;padding:10px;background:#070a20;border:1px solid #303768;border-radius:8px;color:#fff;">
+                    <input id="companyLoginPassword" type="password" placeholder="Company password" style="flex:1;min-width:180px;padding:10px;background:#070a20;border:1px solid #303768;border-radius:8px;color:#fff;">
+                    <button class="otp-btn" onclick="loginCompany()">Company Login</button>
+                    <button class="otp-btn" onclick="logoutCompany()">Logout Company</button>
+                </div>
+            </div>
+            <section class="official-directory-wrap" aria-labelledby="officialDirectoryTitle">
+                <div class="official-directory-head">
+                    <div>
+                        <h3 id="officialDirectoryTitle">🏭 MSME Company Directory</h3>
+                        <p>Sample MSME companies (Uttar Pradesh) with one sample opening each. These are demo profiles, not registered or verified employers. Real MSMEs can register below and post their own requirements.</p>
+                    </div>
+                    <span class="directory-pill">12 sample MSMEs · Demo data</span>
+                </div>
+                <div id="officialCompanyDirectory" class="official-company-grid" aria-live="polite">
+                    <p style="color:#687b93;font-size:13px;">Loading official company directory…</p>
+                </div>
+                <p class="directory-disclaimer">Sample MSME data is for demonstration only. Replace it with companies that have registered and been verified on this platform before production use.</p>
+            </section>
+
+            <div style="background:#0c1432; border:1px solid #2b3167; border-radius:14px; padding:16px; margin-bottom:22px;">
+                <h3 style="color:#f1f5f9; margin-bottom:8px;">🏭 Registered Company Directory</h3>
+                <p style="color:#94a3b8; font-size:12px; margin-bottom:12px;">New registrations remain pending until documents/contact details are checked. Do not display an unverified company as verified.</p>
+                <div id="msmeCompaniesList" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px;"><span style="color:#94a3b8;">Loading companies…</span></div>
+            </div>
+            <div style="background:#0c1432; border:1px solid #2b3167; border-radius:14px; padding:16px; margin-bottom:22px;">
+                <h3 style="color:#f1f5f9; margin-bottom:8px;">📌 Live Company Requirements</h3>
+                <div id="companyJobsList" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:10px;"><span style="color:#94a3b8;">Loading jobs…</span></div>
+            </div>
+
+            <!-- DEMO STUDENT RESUME DIRECTORY -->
+            <section style="background:#0c1432;border:1px solid #2b3167;border-radius:14px;padding:16px;margin-bottom:22px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
+                    <div>
+                        <h3 style="color:#f1f5f9;">📚 Student Resume Directory <span style="font-size:11px;color:#fbbf24;">DEMO PROFILES</span></h3>
+                        <p style="color:#94a3b8;font-size:12px;margin-top:5px;">Company demo ke liye 22 sample student profiles. Resume view/download available hai; ye real/verified candidate records nahi hain.</p>
+                    </div>
+                    <span id="demoStudentCount" class="directory-pill">Loading profiles…</span>
+                </div>
+                <div id="selectedStudentsBar" style="background:#090f29;border:1px solid #303768;border-radius:12px;padding:12px;margin-bottom:12px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+                        <strong id="selectedStudentsCount" style="color:#86efac;font-size:13px;">Selected: 0</strong>
+                        <div style="display:flex;gap:7px;flex-wrap:wrap;">
+                            <button type="button" class="otp-btn" onclick="selectTopStudents(5)">Select top 5 shown</button>
+                            <button type="button" class="otp-btn" onclick="downloadSelectedStudents()">Download selected (.csv)</button>
+                            <button type="button" class="otp-btn" onclick="clearSelectedStudents()">Clear</button>
+                        </div>
+                    </div>
+                    <div id="selectedStudentsList" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;"></div>
+                </div>
+                <input id="studentResumeSearch" type="search" placeholder="Search name, role, skill or education…" oninput="filterDemoStudentResumes()" style="width:100%;padding:12px;background:#070a20;border:1px solid #303768;border-radius:9px;color:#fff;margin-bottom:14px;">
+                <div id="demoStudentResumeGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:12px;">
+                    <p style="color:#94a3b8;">Loading sample student resumes…</p>
+                </div>
+            </section>
+            <div id="demoResumeModal" style="display:none;position:fixed;inset:0;background:rgba(3,5,17,.88);z-index:1000000;align-items:center;justify-content:center;padding:20px;">
+                <div style="width:100%;max-width:700px;max-height:90vh;overflow:auto;background:#0e132d;border:1px solid #3b4582;border-radius:16px;padding:22px;">
+                    <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;">
+                        <h3 id="demoResumeTitle">Sample Resume</h3>
+                        <button type="button" class="otp-btn" onclick="closeDemoResume()">Close ✕</button>
+                    </div>
+                    <p style="color:#fbbf24;font-size:11px;margin:8px 0 14px;">DEMO ONLY — SAMPLE DATA, NOT A VERIFIED REAL CANDIDATE</p>
+                    <div id="demoResumeContent" style="color:#cbd5e1;line-height:1.7;font-size:13px;"></div>
+                    <button type="button" id="demoResumeSelectBtn" class="otp-btn" style="margin-top:16px;margin-right:8px;" onclick="toggleStudentSelection(window._openStudentId);viewDemoResume(window._openStudentId)">Select</button>
+                    <a id="demoResumeDownload" class="enter-button" style="display:inline-block;text-decoration:none;margin-top:16px;" href="#" download>⬇ Download sample resume (.txt)</a>
+                </div>
+            </div>
+
+            <!-- COMPANY APPLICATION REVIEW TABLE -->
+            <h3 style="color: #f1f5f9; margin-bottom: 12px; font-size: 16px;">🎯 Candidate Applications (requires recruiter access setup)</h3>
+            <div style="background: #0c1432; border: 1px solid #2b3167; border-radius: 14px; overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; min-width: 600px;">
+                    <thead>
+                        <tr style="background: #070a20; color: #8589a8; border-bottom: 1px solid #252b59;">
+                            <th style="padding: 14px 18px;">CANDIDATE NAME</th>
+                            <th style="padding: 14px 18px;">TARGET ROLE</th>
+                            <th style="padding: 14px 18px;">MATCHED / MISSING SKILLS</th>
+                            <th style="padding: 14px 18px;">TWIN READINESS</th>
+                            <th style="padding: 14px 18px;">ACTION</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recruiterCandidatesBody">
+                        <!-- Dynamically Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- CUSTOM JOB POST MODAL -->
+            <div id="jobPostModal" style="display: none; position: fixed; inset: 0; background: rgba(3, 5, 17, 0.85); backdrop-filter: blur(8px); z-index: 999999; align-items: center; justify-content: center; padding: 20px;">
+                <div style="background: #0e132d; border: 1px solid #3b4582; border-radius: 18px; padding: 24px; width: 100%; max-width: 560px; max-height: 90vh; overflow:auto; box-shadow: 0 0 50px rgba(34, 197, 94, 0.3);">
+                    <h3 style="color: #4ade80; margin-bottom: 6px;">Post Requirement to Rojgar Setu</h3>
+                    <p style="color: #94a3b8; font-size: 12px; margin-bottom: 16px;">Publish hiring requirement to auto-match with verified digital twins.</p>
+
+                    <label style="font-size: 11px; color: #8589a8; display:block; margin-bottom:5px; font-weight:bold;">COMPANY</label>
+                    <select id="jobCompanySelect" style="width:100%; padding:11px 14px; background:#070a20; border:1px solid #303768; border-radius:10px; color:#fff; margin-bottom:14px;"><option value="">Register a company first</option></select>
+                    <label style="font-size: 11px; color: #8589a8; display:block; margin-bottom:5px; font-weight:bold;">JOB / INTERNSHIP TITLE</label>
+                    <input type="text" id="newJobTitleInput" placeholder="e.g. Biotechnology Intern" style="width:100%; padding:11px 14px; background:#070a20; border:1px solid #303768; border-radius:10px; color:#fff; outline:none; font-size:13px; margin-bottom:14px;">
+                    <label style="font-size: 11px; color: #8589a8; display:block; margin-bottom:5px; font-weight:bold;">OPPORTUNITY TYPE</label>
+                    <select id="newJobTypeInput" style="width:100%; padding:11px 14px; background:#070a20; border:1px solid #303768; border-radius:10px; color:#fff; margin-bottom:14px;"><option>Internship</option><option>Full-time job</option><option>Part-time job</option><option>Project-based work</option><option>Apprenticeship</option></select>
+                    <label style="font-size: 11px; color: #8589a8; display:block; margin-bottom:5px; font-weight:bold;">KEY REQUIRED SKILLS (comma-separated)</label>
+                    <input type="text" id="newJobSkillsInput" placeholder="e.g. Python, Excel, Communication" style="width:100%; padding:11px 14px; background:#070a20; border:1px solid #303768; border-radius:10px; color:#fff; outline:none; font-size:13px; margin-bottom:14px;">
+                    <label style="font-size:11px; color:#8589a8; display:block; margin-bottom:5px; font-weight:bold;">LOCATION</label>
+                    <input type="text" id="newJobLocationInput" placeholder="e.g. Varanasi / Remote" style="width:100%; padding:11px 14px; background:#070a20; border:1px solid #303768; border-radius:10px; color:#fff; margin-bottom:14px;">
+                    <label style="font-size:11px; color:#8589a8; display:block; margin-bottom:5px; font-weight:bold;">STIPEND / SALARY (OPTIONAL)</label>
+                    <input type="text" id="newJobPayInput" placeholder="e.g. ₹8,000/month" style="width:100%; padding:11px 14px; background:#070a20; border:1px solid #303768; border-radius:10px; color:#fff; margin-bottom:14px;">
+                    <label style="font-size:11px; color:#8589a8; display:block; margin-bottom:5px; font-weight:bold;">DESCRIPTION (OPTIONAL)</label>
+                    <textarea id="newJobDescriptionInput" rows="3" placeholder="Responsibilities and eligibility" style="width:100%; padding:11px 14px; background:#070a20; border:1px solid #303768; border-radius:10px; color:#fff; margin-bottom:14px;"></textarea>
+                    <label style="font-size:11px; color:#8589a8; display:block; margin-bottom:5px; font-weight:bold;">APPLICATION DEADLINE (OPTIONAL)</label>
+                    <input type="date" id="newJobDeadlineInput" style="width:100%; padding:11px 14px; background:#070a20; border:1px solid #303768; border-radius:10px; color:#fff; margin-bottom:20px;">
+
+                    <div style="display: flex; gap: 10px;">
+                        <button type="button" class="enter-button" style="flex: 1; background: linear-gradient(135deg, #16a34a, #22c55e); border: none; padding: 11px;" onclick="confirmJobPost()">Publish Job ✦</button>
+                        <button type="button" class="otp-btn" style="background: transparent; border-color: #3b4582; color: #94a3b8;" onclick="closeJobPostModal()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MSME COMPANY REGISTRATION MODAL -->
+        <div id="companyRegisterModal" style="display:none; position:fixed; inset:0; background:rgba(3,5,17,.88); z-index:1000000; align-items:center; justify-content:center; padding:20px;">
+            <div style="background:#0e132d; border:1px solid #3b4582; border-radius:18px; padding:24px; width:100%; max-width:560px; max-height:90vh; overflow:auto;">
+                <h3 style="color:#4ade80; margin-bottom:6px;">🏭 Register an MSME Company</h3>
+                <p style="color:#94a3b8; font-size:12px; margin-bottom:16px;">Registration status will be “Pending verification” until checked by an administrator.</p>
+                <label style="font-size:11px;color:#8589a8;display:block;margin-bottom:5px;font-weight:bold;">COMPANY NAME *</label>
+                <input id="msmeName" placeholder="Registered / business name" style="width:100%;padding:11px;background:#070a20;border:1px solid #303768;border-radius:10px;color:#fff;margin-bottom:12px;">
+                <label style="font-size:11px;color:#8589a8;display:block;margin-bottom:5px;font-weight:bold;">INDUSTRY *</label>
+                <select id="msmeIndustry" style="width:100%;padding:11px;background:#070a20;border:1px solid #303768;border-radius:10px;color:#fff;margin-bottom:12px;"><option value="">Select industry</option><option>IT / Software</option><option>Biotechnology / Healthcare</option><option>Manufacturing</option><option>Agriculture / Food Processing</option><option>Education / Training</option><option>Retail / E-commerce</option><option>Other</option></select>
+                <label style="font-size:11px;color:#8589a8;display:block;margin-bottom:5px;font-weight:bold;">OFFICIAL EMAIL *</label>
+                <input id="msmeEmail" type="email" placeholder="hr@company.in" style="width:100%;padding:11px;background:#070a20;border:1px solid #303768;border-radius:10px;color:#fff;margin-bottom:12px;">
+                <label style="font-size:11px;color:#8589a8;display:block;margin-bottom:5px;font-weight:bold;">PHONE</label>
+                <input id="msmePhone" type="tel" placeholder="Business contact number" style="width:100%;padding:11px;background:#070a20;border:1px solid #303768;border-radius:10px;color:#fff;margin-bottom:12px;">
+                <label style="font-size:11px;color:#8589a8;display:block;margin-bottom:5px;font-weight:bold;">LOCATION *</label>
+                <input id="msmeLocation" placeholder="City, State or Remote" style="width:100%;padding:11px;background:#070a20;border:1px solid #303768;border-radius:10px;color:#fff;margin-bottom:12px;">
+                <label style="font-size:11px;color:#8589a8;display:block;margin-bottom:5px;font-weight:bold;">WEBSITE (OPTIONAL)</label>
+                <input id="msmeWebsite" type="url" placeholder="https://example.in" style="width:100%;padding:11px;background:#070a20;border:1px solid #303768;border-radius:10px;color:#fff;margin-bottom:12px;">
+                <label style="font-size:11px;color:#8589a8;display:block;margin-bottom:5px;font-weight:bold;">CREATE COMPANY PASSWORD * (10+ CHARACTERS)</label>
+                <input id="msmePassword" type="password" autocomplete="new-password" placeholder="Create a strong password" style="width:100%;padding:11px;background:#070a20;border:1px solid #303768;border-radius:10px;color:#fff;margin-bottom:12px;">
+                <label style="font-size:11px;color:#8589a8;display:block;margin-bottom:5px;font-weight:bold;">UDYAM REGISTRATION NUMBER (OPTIONAL)</label>
+                <input id="msmeUdyam" placeholder="Enter only if registered; verification is separate" style="width:100%;padding:11px;background:#070a20;border:1px solid #303768;border-radius:10px;color:#fff;margin-bottom:18px;">
+                <div style="display:flex;gap:10px;flex-wrap:wrap;"><button class="enter-button" onclick="submitMSMECompany()" style="flex:1;background:linear-gradient(135deg,#16a34a,#22c55e);border:0;">Register Company</button><button class="otp-btn" onclick="closeCompanyModal()">Cancel</button></div>
+            </div>
+        </div>
+
+        <div class="panel" id="settingsPanel">
+            <h2>⚙ System Settings</h2>
+            <p style="color:#aeb1ca; margin-top:5px; margin-bottom: 20px;">Configure telemetry, profile synchronization, and notifications.</p>
+            <div class="form-box">
+                <label>PROFILE TELEMETRY</label>
+                <p style="color:#4ade80; font-size: 13px;">Auto-sync with Rojgar Setu Matching Pipeline: ENABLED</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- SCRIPTS & AUTH LOGIC -->
+<script>
+let currentTabState = "login";
+let clerkInstance = null;
+let phoneSignUpAttempt = null;
+let phoneSignInAttempt = null;
+let currentCalculatedScore = 0;
+let isRecruiterView = false;
+
+// Candidate records are never fabricated in the recruiter dashboard.
+let candidatePool = [];
+
+// Initialize on Page Load
+window.addEventListener("load", async () => {
+    try {
+        if (window.Clerk) {
+            clerkInstance = window.Clerk;
+            await clerkInstance.load();
+
+            if (clerkInstance.user) {
+                const displayName = clerkInstance.user.firstName || "User";
+                const contact = clerkInstance.user.primaryPhoneNumber?.phoneNumber || clerkInstance.user.primaryEmailAddress?.emailAddress;
+                completeAuthentication(displayName, contact);
+                return;
+            }
+        }
+    } catch(err) {
+        console.error("Clerk Init Warning:", err);
+    }
+
+    try {
+        const response = await fetch('/api/auth/me', {credentials:'same-origin'});
+        const result = await response.json();
+        if (result.authenticated && result.user) completeAuthentication(result.user.name, result.user.email);
+        else { document.getElementById('dashboard').style.display = 'none'; document.getElementById('authModal').style.display = 'none'; }
+    } catch (_) { document.getElementById('dashboard').style.display = 'none'; }
+    window.scrollTo(0, 0);
+});
+
+function openAuthModal() {
+    const modal = document.getElementById('authModal');
+    modal.style.display = 'flex';
+    setTimeout(() => {
+        if(currentTabState === 'signup') document.getElementById('authUserName').focus();
+        else document.getElementById('authUserEmail').focus();
+    }, 100);
+}
+
+function closeAuthModal() {
+    document.getElementById('authModal').style.display = 'none';
+}
+
+function switchAuthTab(type) {
+    currentTabState = type;
+    const nameGroup = document.getElementById('signupNameGroup');
+    const tabLogin = document.getElementById('btnTabLogin');
+    const tabSignup = document.getElementById('btnTabSignup');
+    const submitBtn = document.getElementById('authSubmitBtn');
+    const nameInput = document.getElementById('authUserName');
+    const emailInput = document.getElementById('authUserEmail');
+
+    if (type === "signup") {
+        nameGroup.style.display = "block";
+        tabSignup.classList.add("active");
+        tabLogin.classList.remove("active");
+        submitBtn.innerText = "Create Account & Enter ✦";
+        setTimeout(() => nameInput.focus(), 50);
+    } else {
+        nameGroup.style.display = "none";
+        tabLogin.classList.add("active");
+        tabSignup.classList.remove("active");
+        submitBtn.innerText = "Continue with Email ✦";
+        setTimeout(() => emailInput.focus(), 50);
+    }
+}
+
+// Email/password accounts are stored server-side; passwords are never kept in localStorage.
+async function processEmailAuth(e) {
+    if (e) { e.preventDefault(); e.stopPropagation(); }
+    const email = document.getElementById('authUserEmail').value.trim().toLowerCase();
+    const name = document.getElementById('authUserName').value.trim();
+    const password = document.getElementById('authUserPass').value;
+    if (!email || !password) { alert('Please enter both email and password.'); return false; }
+    if (currentTabState === 'signup' && password.length < 10) { alert('Password must contain at least 10 characters.'); return false; }
+    const endpoint = currentTabState === 'signup' ? '/api/auth/register' : '/api/auth/login';
+    try {
+        const response = await fetch(endpoint, {method:'POST', headers:{'Content-Type':'application/json'}, credentials:'same-origin', body:JSON.stringify({name, email, password})});
+        const result = await response.json();
+        if (!response.ok) { alert(result.error || 'Authentication failed.'); return false; }
+        completeAuthentication(result.user.name, result.user.email);
+    } catch (error) { alert('Could not reach the server. Please ensure the Flask app is running.'); }
+    return false;
+}
+
+// 2. CLERK REAL PHONE SMS OTP DISPATCH
+async function sendPhoneOtp() {
+    const rawPhone = document.getElementById('authPhone').value.trim();
+    if (rawPhone.length !== 10 || isNaN(rawPhone)) {
+        alert("Please enter a valid 10-digit mobile number.");
+        return;
+    }
+
+    const formattedPhone = "+91" + rawPhone;
+    const sendBtn = document.getElementById('sendPhoneOtpBtn');
+    sendBtn.innerText = "Sending...";
+    sendBtn.disabled = true;
+
+    try {
+        if (!clerkInstance) {
+            throw new Error("Clerk SDK is initializing. Please wait a moment.");
+        }
+
+        try {
+            phoneSignUpAttempt = await clerkInstance.client.signUp.create({
+                phoneNumber: formattedPhone,
+            });
+            await phoneSignUpAttempt.preparePhoneNumberVerification();
+        } catch (signupErr) {
+            phoneSignInAttempt = await clerkInstance.client.signIn.create({
+                identifier: formattedPhone,
+            });
+            const { supportedFirstFactors } = phoneSignInAttempt;
+            const phoneFactor = supportedFirstFactors.find(
+                (f) => f.strategy === "phone_code" && f.phoneNumberId
+            );
+            await phoneSignInAttempt.prepareFirstFactor({
+                strategy: "phone_code",
+                phoneNumberId: phoneFactor.phoneNumberId,
+            });
+        }
+
+        sendBtn.innerText = "Resend";
+        sendBtn.disabled = false;
+        document.getElementById('phoneOtpGroup').style.display = 'block';
+        alert(`Real SMS OTP sent to ${formattedPhone}! Please check your mobile messages.`);
+    } catch (err) {
+        sendBtn.innerText = "Send OTP";
+        sendBtn.disabled = false;
+        console.error("Clerk SMS Error:", err);
+        alert(err.errors ? err.errors[0].longMessage || err.errors[0].message : err.message);
+    }
+}
+
+// 3. CLERK REAL OTP VERIFICATION
+async function verifyPhoneOtp() {
+    const otp = document.getElementById('authPhoneOtp').value.trim();
+    const rawPhone = document.getElementById('authPhone').value.trim();
+
+    if (!otp || otp.length < 6) {
+        alert("Please enter the 6-digit verification code received via SMS.");
+        return;
+    }
+
+    const verifyBtn = document.getElementById('verifyPhoneOtpBtn');
+    verifyBtn.innerText = "Verifying...";
+    verifyBtn.disabled = true;
+
+    try {
+        let resultSessionId = null;
+
+        if (phoneSignUpAttempt) {
+            const res = await phoneSignUpAttempt.attemptPhoneNumberVerification({ code: otp });
+            if (res.status === "complete") {
+                resultSessionId = res.createdSessionId;
+            }
+        } else if (phoneSignInAttempt) {
+            const res = await phoneSignInAttempt.attemptFirstFactor({
+                strategy: "phone_code",
+                code: otp,
+            });
+            if (res.status === "complete") {
+                resultSessionId = res.createdSessionId;
+            }
+        }
+
+        if (resultSessionId) {
+            await clerkInstance.setActive({ session: resultSessionId });
+            completeAuthentication("User " + rawPhone.slice(-4), "+91" + rawPhone);
+        } else {
+            alert("Verification incomplete. Please re-check the OTP.");
+        }
+    } catch (err) {
+        console.error("Clerk Verify Error:", err);
+        alert(err.errors ? err.errors[0].longMessage || err.errors[0].message : "Invalid verification code.");
+    } finally {
+        verifyBtn.innerText = "Verify & Enter";
+        verifyBtn.disabled = false;
+    }
+}
+
+// 4. SOCIAL AUTH
+async function socialAuth(provider) {
+    if (clerkInstance) {
+        try {
+            const strategy = provider === "Google" ? "oauth_google" : "oauth_apple";
+            await clerkInstance.authenticateWithRedirect({
+                strategy: strategy,
+                redirectUrl: window.location.href,
+                redirectUrlComplete: window.location.href,
+            });
+            return;
+        } catch (err) {
+            console.error("Social login redirect error:", err);
+        }
+    }
+    alert(`${provider} sign-in is unavailable because the identity-provider configuration is not set up. Please use email/password sign-in.`);
+}
+
+function completeAuthentication(name, contact) {
+    const userData = {
+        name: name,
+        contact: contact,
+        isAuth: true
+    };
+
+    closeAuthModal();
+    const dash = document.getElementById('dashboard');
+    dash.style.display = 'grid';
+
+    document.getElementById('topProfileBadge').innerText = `Welcome, ${name} 👋`;
+    document.getElementById('dashWelcomeHeading').innerText = `Welcome back, ${name} ✦`;
+
+    dash.scrollIntoView({ behavior: 'smooth' });
+}
+
+async function handleLogout() {
+    if (clerkInstance && clerkInstance.user) { await clerkInstance.signOut(); }
+    try { await fetch('/api/auth/logout', {method:'POST', credentials:'same-origin'}); } catch (_) {}
+    location.reload();
+}
+
+function showPanel(panelId, btnElement) {
+    if (panelId === 'projectPanel') loadStudentProjects();
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('show'));
+    document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+    
+    const target = document.getElementById(panelId);
+    if(target) target.classList.add('show');
+    if(btnElement) btnElement.classList.add('active');
+}
+
+// BACKEND VECTOR ANALYSIS & LIVE UI SYNC
+function runBackendAnalysis(btnTrigger) {
+    const roleSelect = document.getElementById('evalRole');
+    const roleVal = roleSelect ? roleSelect.value : 'sde';
+    const roleName = (roleSelect && roleSelect.options && roleSelect.options[roleSelect.selectedIndex]) 
+        ? roleSelect.options[roleSelect.selectedIndex].text 
+        : "Software Developer";
+
+    const skillsInput = document.getElementById('evalSkills');
+    const skillsText = skillsInput ? skillsInput.value.trim() : '';
+
+    if (!skillsText) {
+        alert("Please enter acquired skills (e.g. Python, SQL, DSA, Git).");
+        if (skillsInput) skillsInput.focus();
+        return;
+    }
+
+    const btn = btnTrigger || document.getElementById('evalBtnMain');
+    if (btn) btn.innerText = "Analyzing Vectors... ✦";
+
+    fetch('/evaluate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role: roleVal, skills: skillsText })
+    })
+    .then(res => {
+        if (!res.ok) throw new Error("API returned status: " + res.status);
+        return res.json();
+    })
+    .then(data => {
+        displayEvaluationResults(data.role_name || roleName, data.score, data.gaps, data);
+        fetch('/api/profile', {method:'POST', headers:{'Content-Type':'application/json'}, credentials:'same-origin', body:JSON.stringify({career_goal:roleName, skills:skillsText})}).catch(() => {});
+        if (btn) btn.innerText = "Run AI Vector Assessment ✦";
+    })
+    .catch(err => {
+        console.error("Career analysis API failed:", err);
+        alert("Career analysis server request failed. Please check the Flask terminal and try again.");
+        if (btn) btn.innerText = "Run AI Vector Assessment ✦";
+    });
+}
+
+function displayEvaluationResults(roleTitle, score, gapsList, analysisData = {}) {
+    const box = document.getElementById('liveResultBox');
+    if (box) box.style.display = 'block';
+
+    currentCalculatedScore = Number(score) || 0;
+    
+    const resScore = document.getElementById('resScore');
+    const topScore = document.getElementById('topScore');
+    const resRoleTitle = document.getElementById('resRoleTitle');
+    const topTargetRole = document.getElementById('topTargetRole');
+
+    if (resScore) resScore.innerText = currentCalculatedScore + '%';
+    if (topScore) topScore.innerText = currentCalculatedScore + '% MATCH';
+    if (resRoleTitle) resRoleTitle.innerText = `${roleTitle} Analysis Complete`;
+    if (topTargetRole) topTargetRole.innerText = roleTitle;
+    const explanation = document.getElementById('scoreExplanation');
+    if (explanation) explanation.innerText = analysisData.score_explanation || 'Score is calculated from required-skill coverage.';
+
+    const gaps = gapsList || [];
+    const totalGapsEl = document.getElementById('totalGapsDisplay');
+    if (totalGapsEl) totalGapsEl.innerText = gaps.length;
+
+    renderSkillGaps(gaps);
+    renderDynamicRoadmap(gaps, analysisData.roadmap || []);
+    renderDynamicLearningHub(gaps);
+    renderDynamicJobMatches(currentCalculatedScore, gaps);
+}
+
+// RENDER DETAILED SKILL GAP CARDS DYNAMICALLY
+function renderSkillGaps(gaps) {
+    const container = document.getElementById('gapContainerList');
+    if (!container) return;
+
+    if (gaps.length === 0) {
+        container.innerHTML = `
+            <div style="background: rgba(74, 222, 128, 0.1); border: 1px solid #4ade80; padding: 18px; border-radius: 12px; color: #86efac;">
+                ✦ Exceptional! Your skills fully align with the current benchmark. Zero critical gaps identified.
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = gaps.map(skill => `
+        <div class="gap-item-card">
+            <div>
+                <strong style="color: #f87171; font-size: 14px;">⚠ MISSING: ${skill.toUpperCase()}</strong>
+                <p style="color: #94a3b8; font-size: 12px; margin-top: 3px;">High impact on hiring readiness score.</p>
+            </div>
+            <button class="otp-btn" onclick="simulateSkillImpact('${skill}', 10)">Simulate Impact</button>
+        </div>
+    `).join('');
+}
+
+// DYNAMIC ROADMAP GENERATOR BASED ON MISSING GAPS
+function renderDynamicRoadmap(gaps, roadmapItems = []) {
+    const roadmapContainer = document.getElementById('roadmapStepContainer');
+    const dashPreview = document.getElementById('dashRoadmapPreview');
+
+    if (!roadmapContainer) return;
+
+    if (!gaps || gaps.length === 0) {
+        roadmapContainer.innerHTML = `
+            <div style="background: rgba(74, 222, 128, 0.1); border: 1px solid #4ade80; padding: 18px; border-radius: 12px; color: #86efac;">
+                ✦ All core benchmark milestones unlocked! You are industry-ready. Focus on portfolio showcases.
+            </div>
+        `;
+        if (dashPreview) {
+            dashPreview.innerHTML = `<li>Full Benchmark Achieved <span class="badge">Complete</span></li>`;
+        }
+        return;
+    }
+
+    if (roadmapItems.length) {
+        roadmapContainer.innerHTML = roadmapItems.map((item, index) => `
+            <div style="background:#0d1433;padding:16px;border-radius:12px;border-left:4px solid ${index===0?'#a855f7':'#6366f1'}">
+                <h4 style="color:#c084fc">Priority ${index+1}: ${escapeHTML(item.skill)}</h4>
+                <p style="color:#fbbf24;font-size:12px;margin-top:5px">${escapeHTML(item.status || 'Ready to learn')}</p>
+                <p style="color:#cbd5e1;font-size:13px;margin-top:6px">${escapeHTML(item.description || '')}</p>
+                <p style="color:#94a3b8;font-size:12px;margin-top:6px">Project evidence: ${escapeHTML(item.suggested_project || 'Build a small practical project.')}</p>
+            </div>`).join('');
+        if (dashPreview) dashPreview.innerHTML = roadmapItems.slice(0,3).map(item => `<li>${escapeHTML(item.skill)} <span class="badge">${escapeHTML(item.status || 'Next')}</span></li>`).join('');
+        return;
+    }
+
+    const phase1 = gaps.slice(0, Math.ceil(gaps.length / 3));
+    const phase2 = gaps.slice(Math.ceil(gaps.length / 3), Math.ceil((gaps.length * 2) / 3));
+    const phase3 = gaps.slice(Math.ceil((gaps.length * 2) / 3));
+
+    roadmapContainer.innerHTML = `
+        <div style="background: #0d1433; padding: 18px; border-radius: 12px; border-left: 4px solid #a855f7;">
+            <h4 style="color: #c084fc;">Phase 1: Priority Foundation Bridge (Weeks 1-2)</h4>
+            <p style="color: #94a3b8; font-size: 13px; margin-top: 4px;">
+                Focus on closing foundational deficits: <strong style="color: #e2e8f0;">${phase1.join(', ').toUpperCase() || 'Core Revision'}</strong>.
+            </p>
+        </div>
+        <div style="background: #0d1433; padding: 18px; border-radius: 12px; border-left: 4px solid #6366f1;">
+            <h4 style="color: #818cf8;">Phase 2: Architectural & Framework Mastery (Weeks 3-5)</h4>
+            <p style="color: #94a3b8; font-size: 13px; margin-top: 4px;">
+                Deepen practical application: <strong style="color: #e2e8f0;">${phase2.join(', ').toUpperCase() || 'System Design Integration'}</strong>.
+            </p>
+        </div>
+        <div style="background: #0d1433; padding: 18px; border-radius: 12px; border-left: 4px solid #38bdf8;">
+            <h4 style="color: #7dd3fc;">Phase 3: Production Validation & Deployment (Weeks 6-8)</h4>
+            <p style="color: #94a3b8; font-size: 13px; margin-top: 4px;">
+                Final enterprise hardening: <strong style="color: #e2e8f0;">${phase3.join(', ').toUpperCase() || 'Capstone Deployment'}</strong>.
+            </p>
+        </div>
+    `;
+
+    if (dashPreview) {
+        dashPreview.innerHTML = `
+            <li>Phase 1: ${phase1[0] ? phase1[0].toUpperCase() : 'Fundamentals'} <span class="badge">In Progress</span></li>
+            <li>Phase 2: ${phase2[0] ? phase2[0].toUpperCase() : 'Architecture'} <span class="badge">Next</span></li>
+            <li>Phase 3: ${phase3[0] ? phase3[0].toUpperCase() : 'Deployment'} <span class="badge">Upcoming</span></li>
+        `;
+    }
+}
+
+// DYNAMIC LEARNING HUB GENERATOR
+function renderDynamicLearningHub(gaps) {
+    const learningList = document.querySelector('#learningPanel .recommendations');
+    const dashPreview = document.getElementById('dashLearningPreview');
+
+    if (!learningList) return;
+
+    if (!gaps || gaps.length === 0) {
+        learningList.innerHTML = `<li>All gap modules completed! Explore Open Source contribution tracks. <span class="badge">Advanced</span></li>`;
+        return;
+    }
+
+    const htmlContent = gaps.map(skill => `
+        <li>
+            Complete Masterclass: <strong>${skill.toUpperCase()}</strong> Architectural Deep Dive
+            <span class="badge">Targeted Fix</span>
+        </li>
+    `).join('');
+
+    learningList.innerHTML = htmlContent;
+
+    if (dashPreview) {
+        dashPreview.innerHTML = gaps.slice(0, 3).map(skill => `
+            <li>Master ${skill.toUpperCase()} <span class="badge">Targeted</span></li>
+        `).join('');
+    }
+}
+
+// Live opportunity matching: scores are calculated from job-required skills, not sample percentages.
+function saveDemoStudentSkills() {
+    const profileSkills = document.getElementById('studentDemoSkills');
+    const evalSkills = document.getElementById('evalSkills');
+    const goal = document.getElementById('studentDemoGoal')?.value || 'Python Developer Intern';
+    const skills = (profileSkills?.value || '').trim();
+    if (!skills) { alert('Please enter at least one skill.'); return; }
+    if (evalSkills) evalSkills.value = skills;
+    try { localStorage.setItem('careerTwinDemoSkills', skills); } catch (_) {}
+    const status = document.getElementById('studentDemoStatus');
+    if (status) status.textContent = 'Skills saved for this browser session. Loading job matches…';
+    showPanel('jobPanel', document.querySelector('.nav button[onclick*="jobPanel"]'));
+    renderDynamicJobMatches(0, []);
+}
+async function renderDynamicJobMatches(score, gaps) {
+    const jobContainer = document.getElementById('jobMatchesContainer');
+    const dashJobs = document.getElementById('dashJobsPreview');
+    if (!jobContainer) return;
+    let skills = (document.getElementById('evalSkills')?.value || '').trim();
+    if (!skills) {
+        try { skills = localStorage.getItem('careerTwinDemoSkills') || ''; } catch (_) {}
+    }
+    if (!skills) skills = (document.getElementById('studentDemoSkills')?.value || 'Python, SQL, HTML, Git').trim();
+    const profileSkills = document.getElementById('studentDemoSkills');
+    if (profileSkills && !profileSkills.value.trim()) profileSkills.value = skills;
+    jobContainer.innerHTML = '<p style="color:#94a3b8">Matching your skills to saved company requirements…</p>';
+    try {
+        const response = await fetch('/api/matches', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({skills, include_demo:true})});
+        const payload = await response.json();
+        let myRepos = [];
+        try { const pr = await fetch('/api/projects',{credentials:'same-origin',cache:'no-store'}); if (pr.ok) myRepos = (await pr.json()).map(x => x.github_url); } catch (_) {}
+        const jobs = payload.matches || [];
+        if (!jobs.length) {
+            jobContainer.innerHTML = '<div style="border:1px solid #303768;border-radius:12px;padding:16px;color:#cbd5e1">No company-posted opportunities yet. Open the Rojgar Setu (Recruiter) section to register an MSME and post a real requirement. Sample job cards are intentionally not shown as real opportunities.</div>';
+            if (dashJobs) dashJobs.innerHTML = '<li>No saved opportunities yet <span class="badge">Awaiting jobs</span></li>';
+            return;
+        }
+        jobContainer.innerHTML = `<datalist id="ghList">${myRepos.map(u => `<option value="${escapeHTML(u)}"></option>`).join('')}</datalist>` + jobs.map(job => {
+            const matched = (job.matched_skills || []).map(escapeHTML);
+            const missing = (job.missing_skills || []).map(escapeHTML);
+            const companyStatus = job.verified_company ? 'Verified company' : 'Company pending verification';
+            return `<div style="background:#0d1433;padding:16px;border-radius:12px;border:1px solid #2b3167;">
+                <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><strong style="color:#f1f5f9;font-size:15px">${escapeHTML(job.title)}</strong><p style="color:#94a3b8;font-size:12px;margin-top:4px">${escapeHTML(job.company_name)} • ${escapeHTML(job.job_type)} • ${escapeHTML(job.location)}</p></div><strong style="color:${job.match_percentage>=70?'#4ade80':'#fbbf24'}">${job.match_percentage}% skill coverage</strong></div>
+                <p style="color:#94a3b8;font-size:12px;margin-top:8px">${escapeHTML(companyStatus)} • ${escapeHTML(job.score_explanation)}</p>
+                <p style="color:#86efac;font-size:12px;margin-top:6px">Matched: ${matched.join(', ') || 'None yet'}</p><p style="color:#fca5a5;font-size:12px;margin-top:4px">To learn: ${missing.join(', ') || 'No listed skill gaps'}</p>
+                ${job.demo ? `<p style="color:#fbbf24;font-size:11px;margin-top:10px">SAMPLE MSME OPENING — demo only, application is not sent to any real employer.</p>` : `
+                <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+                    <input id="gh-${Number(job.id)}" list="ghList" type="text" inputmode="url" placeholder="Your GitHub link (github.com/username/repo)" style="flex:1;min-width:220px;padding:9px;border-radius:8px;background:#070a20;border:1px solid #303768;color:#fff;font-size:12px">
+                    <button type="button" class="otp-btn" onclick="openGithubLink('gh-${Number(job.id)}')">Open link ↗</button>
+                    <button class="otp-btn" onclick="applyToJob(${Number(job.id)})">Apply and save match</button>
+                </div>`}</div>`;
+        }).join('');
+        if (dashJobs) dashJobs.innerHTML = jobs.slice(0,3).map(job => `<li>${escapeHTML(job.title)} <span class="job-match">${job.match_percentage}%</span></li>`).join('');
+    } catch (error) {
+        jobContainer.innerHTML = '<p style="color:#fca5a5">Could not load saved jobs. Check that the Flask server is running.</p>';
+    }
+}
+
+function normalizeGithubInput(value) {
+    let v = String(value || '').trim();
+    if (!v) return '';
+    v = v.replace(/^(https?:\/\/)?(www\.)?/i, '');
+    if (!/^github\.com\//i.test(v)) return null;
+    return 'https://' + v.split(/[?#]/)[0].replace(/\/+$/, '').replace(/\.git$/i, '');
+}
+function openGithubLink(inputId) {
+    const url = normalizeGithubInput(document.getElementById(inputId)?.value);
+    if (url === '' ) { alert('Pehle apna GitHub link paste karein.'); return; }
+    if (url === null) { alert('Link github.com se shuru hona chahiye, jaise github.com/username/repository'); return; }
+    window.open(url, '_blank', 'noopener,noreferrer');
+}
+async function applyToJob(jobId) {
+    const skills = (document.getElementById('evalSkills')?.value || '').trim();
+    const github_url = (document.getElementById('gh-' + jobId)?.value || '').trim();
+    if (normalizeGithubInput(github_url) === null) { alert('GitHub link github.com/username ya github.com/username/repository format me hona chahiye.'); return; }
+    try {
+        const response = await fetch('/api/applications', {method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({job_id:jobId,skills,github_url})});
+        const result = await response.json();
+        if (!response.ok) { alert(result.error || 'Application could not be saved.'); if(response.status===401) openAuthModal(); return; }
+        alert(`Application saved. Skill coverage: ${result.match_percentage}%. Missing skills: ${result.missing_skills.join(', ') || 'none listed'}.` + (result.github_url ? `\nGitHub link attached: ${result.github_url}` : ''));
+    } catch (_) { alert('Could not reach the server.'); }
+}
+
+// WHAT-IF CAREER FORECASTING SIMULATOR FUNCTION
+function simulateSkillImpact(skillName, impactWeight) {
+    if (!currentCalculatedScore) { alert('Run Skill Analysis first to establish your current skill-coverage baseline.'); return; }
+    const projectedScore = Math.min(100, currentCalculatedScore + impactWeight);
+    const alertBox = document.getElementById('simAlertBox');
+    
+    if (alertBox) {
+        alertBox.style.display = 'block';
+        alertBox.innerHTML = `
+            ✦ <strong>Forecasting Impact for [${skillName.toUpperCase()}]:</strong><br>
+            If you learn and demonstrate this skill, a checklist-only scenario would change the displayed coverage from 
+            <strong>${currentCalculatedScore}%</strong> to <strong style="font-size: 15px; color: #fff;">${projectedScore}%</strong>. 
+            This is an illustrative scenario only. Re-run Skill Analysis after learning the skill; no hiring or placement probability is estimated.
+        `;
+    }
+
+    // Dynamic UI preview update
+    const topScore = document.getElementById('topScore');
+    if (topScore) {
+        topScore.innerText = `${projectedScore}% FORECASTED`;
+        topScore.style.color = '#38bdf8';
+    }
+}
+
+// RESUME UPLOAD & PARSING TRIGGER
+function uploadAndAnalyzeResume() {
+    const fileInput = document.getElementById('resumeFileInput');
+    const uploadBtn = document.getElementById('resumeUploadBtn');
+
+    if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+        alert("Please select your PDF resume file first!");
+        return;
+    }
+
+    const file = fileInput.files[0];
+    const formData = new FormData();
+    formData.append('resume', file);
+
+    uploadBtn.innerText = "Extracting Skills from PDF... ✦";
+    uploadBtn.disabled = true;
+
+    fetch('/upload_resume', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        uploadBtn.innerText = "Parse & Match Competencies ✦";
+        uploadBtn.disabled = false;
+
+        if (data.success && data.skills && data.skills.length > 0) {
+            // 1. Show extracted badge cards
+            const resBox = document.getElementById('resumeAnalysisBox');
+            if (resBox) resBox.style.display = 'block';
+
+            const skillsContainer = document.getElementById('extractedSkillsList');
+            if (skillsContainer) {
+                skillsContainer.innerHTML = data.skills.map(s => `
+                    <span style="background: rgba(168, 85, 247, 0.2); border: 1px solid #a855f7; padding: 6px 12px; border-radius: 8px; font-size: 13px; color: #d8b4fe; font-weight: bold;">
+                        ✓ ${s.toUpperCase()}
+                    </span>
+                `).join('');
+            }
+
+            // 2. Auto-fill Skill Assessment input field
+            const evalInput = document.getElementById('evalSkills');
+            if (evalInput) {
+                evalInput.value = data.skills_string;
+            }
+
+            // 3. Auto-trigger assessment engine
+            runBackendAnalysis();
+            alert(`Parsed ${data.raw_count} skills from resume! Career Twin analysis completed.`);
+        } else {
+            alert(data.error || "No recognizable technical keywords found in the resume. Try entering them manually.");
+        }
+    })
+    .catch(err => {
+        console.error("Resume Upload Error:", err);
+        uploadBtn.innerText = "Parse & Match Competencies ✦";
+        uploadBtn.disabled = false;
+        alert("Failed to parse resume. Please make sure the Flask server is running.");
+    });
+}
+
+// -------------------------------------------------------------
+// STEP 1: INTERACTIVE AI MENTOR ENGINE
+// -------------------------------------------------------------
+
+async function handleMentorChat(e) {
+    if (e) e.preventDefault();
+    const input = document.getElementById('mentorInput');
+    const query = input.value.trim(); if (!query) return;
+    appendChatMessage('You', query, false); input.value = '';
+    const typingId = 'typing-' + Date.now();
+    const history = document.getElementById('mentorChatHistory');
+    const typing = document.createElement('div'); typing.id = typingId; typing.innerText = 'CareerTwin-X is checking your profile and skill gaps…';
+    typing.style.cssText = 'background:#111738;border:1px solid #3b4279;padding:10px 14px;border-radius:10px;max-width:85%;font-size:12px;color:#a855f7;'; history.appendChild(typing);
+    try {
+        const role = document.getElementById('evalRole');
+        const skills = (document.getElementById('evalSkills')?.value || '').split(/[,;\n]+/).map(x=>x.trim()).filter(Boolean);
+        const gaps = Array.from(document.querySelectorAll('#gapContainerList .gap-item-card strong')).map(el=>el.textContent.replace('⚠ MISSING:','').trim()).filter(Boolean);
+        const response = await fetch('/api/mentor',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:query,skills,missing_skills:gaps,career_goal:role?.selectedOptions?.[0]?.text || 'software development'})});
+        const result = await response.json(); document.getElementById(typingId)?.remove();
+        appendChatMessage('CareerTwin-X Mentor', result.answer || result.error || 'Could not prepare advice.', true);
+    } catch (_) { document.getElementById(typingId)?.remove(); appendChatMessage('CareerTwin-X Mentor','Could not reach the mentor API. Please check the server.',true); }
+}
+
+function appendChatMessage(sender, text, isAi) {
+    const chatHistory = document.getElementById("mentorChatHistory");
+    if (!chatHistory) return;
+
+    const msgBox = document.createElement("div");
+    if (isAi) {
+        msgBox.style.cssText = "background: #111738; border: 1px solid #3b4279; border-left: 4px solid #a855f7; padding: 12px 16px; border-radius: 10px; max-width: 85%; align-self: flex-start;";
+        const heading = document.createElement('strong');
+        heading.style.cssText = 'color:#c084fc;font-size:12px;display:block;margin-bottom:4px;';
+        heading.textContent = '✦ ' + sender;
+        const paragraph = document.createElement('p');
+        paragraph.style.cssText = 'font-size:13px;color:#e2e8f0;line-height:1.5;white-space:pre-wrap;';
+        paragraph.textContent = text;
+        msgBox.append(heading, paragraph);
+    } else {
+        msgBox.style.cssText = "background: #25165c; border: 1px solid #6d28d9; padding: 10px 14px; border-radius: 10px; max-width: 80%; align-self: flex-end; text-align: right;";
+        const heading = document.createElement('strong'); heading.style.cssText = 'color:#d8b4fe;font-size:11px;display:block;margin-bottom:2px;'; heading.textContent = 'You';
+        const paragraph = document.createElement('p'); paragraph.style.cssText = 'font-size:13px;color:#fff;line-height:1.4;white-space:pre-wrap;'; paragraph.textContent = text;
+        msgBox.append(heading, paragraph);
+    }
+
+    chatHistory.appendChild(msgBox);
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+}
+
+function sendSuggestedPrompt(promptText) {
+    const input = document.getElementById("mentorInput");
+    if (input) {
+        input.value = promptText;
+        handleMentorChat(null);
+    }
+}
+
+// -------------------------------------------------------------
+// STEP 2: ROJGAR SETU RECRUITER PORTAL ENGINE & CANDIDATE PIPELINE
+// -------------------------------------------------------------
+// Demo resume directory: intentionally labelled sample data for presentation/testing.
+let demoStudentProfiles = [];
+
+async function loadDemoStudentResumes() {
+    const grid = document.getElementById('demoStudentResumeGrid');
+    if (!grid) return;
+    try {
+        const response = await fetch('/api/students', {credentials: 'same-origin'});
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.error || 'Unable to load demo profiles');
+        demoStudentProfiles = data.students || [];
+        const count = document.getElementById('demoStudentCount');
+        if (count) count.textContent = `${demoStudentProfiles.length} sample resumes`;
+        refreshSelectionUI();
+    } catch (error) {
+        grid.innerHTML = '<p style="color:#fca5a5;">Student demo directory could not load. Make sure Flask is running and refresh.</p>';
+        console.error('Demo resume directory error:', error);
+    }
+}
+
+function safeResumeText(value) {
+    return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+
+function renderDemoStudentResumes(list) {
+    const grid = document.getElementById('demoStudentResumeGrid');
+    if (!grid) return;
+    if (!list.length) {
+        grid.innerHTML = '<p style="color:#94a3b8;">No matching sample profiles. Try another search.</p>';
+        return;
+    }
+    grid.innerHTML = list.map(student => {
+        const skills = (student.skills || []).slice(0, 5);
+        const project = (student.projects || [])[0] || {};
+        return `<article style="border:1px solid ${isStudentSelected(student.id)?'#22c55e':'#303768'};background:#090f29;border-radius:12px;padding:15px;">
+            <div style="display:flex;justify-content:space-between;gap:8px;align-items:start;">
+                <h4 style="color:#fff;font-size:14px;">${safeResumeText(student.name)}</h4>
+                <span style="font-size:9px;color:#fbbf24;border:1px solid #854d0e;border-radius:5px;padding:3px 5px;">DEMO</span>
+            </div>
+            <p style="color:#aeb1ca;font-size:11px;margin:7px 0;">${safeResumeText(student.career_goal || 'Entry-level role')}</p>
+            <p style="color:#94a3b8;font-size:11px;line-height:1.5;margin-bottom:8px;">${safeResumeText(student.education || '')}</p>
+            <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;">${skills.map(skill => `<span style="font-size:10px;padding:3px 6px;border-radius:5px;background:#201447;color:#d8b4fe;">${safeResumeText(skill)}</span>`).join('')}</div>
+            <p style="color:#cbd5e1;font-size:11px;margin-bottom:12px;">Project: ${safeResumeText(project.title || 'Not listed')}</p>
+            <div style="display:flex;gap:7px;flex-wrap:wrap;">
+                <button type="button" class="otp-btn" onclick="viewDemoResume(${Number(student.id)})">View resume</button>
+                <button type="button" class="otp-btn" style="${isStudentSelected(student.id)?'background:#166534;color:#fff;':''}" onclick="toggleStudentSelection(${Number(student.id)})">${isStudentSelected(student.id)?'✓ Selected':'Select'}</button>
+                <a class="otp-btn" style="text-decoration:none;display:inline-flex;align-items:center;" href="/api/students/${Number(student.id)}/resume.txt" download>Download .txt</a>
+            </div>
+        </article>`;
+    }).join('');
+}
+
+let selectedStudentIds = new Set();
+try { selectedStudentIds = new Set(JSON.parse(localStorage.getItem('rozgarSelectedStudents') || '[]').map(Number)); } catch (_) {}
+function isStudentSelected(id) { return selectedStudentIds.has(Number(id)); }
+function persistSelectedStudents() { try { localStorage.setItem('rozgarSelectedStudents', JSON.stringify([...selectedStudentIds])); } catch (_) {} }
+function currentVisibleStudents() {
+    const query = (document.getElementById('studentResumeSearch')?.value || '').toLowerCase().trim();
+    return demoStudentProfiles.filter(st => [st.name, st.education, st.career_goal, ...(st.skills || [])].join(' ').toLowerCase().includes(query));
+}
+function refreshSelectionUI() {
+    const count = document.getElementById('selectedStudentsCount');
+    if (count) count.textContent = `Selected: ${selectedStudentIds.size}`;
+    const list = document.getElementById('selectedStudentsList');
+    if (list) list.innerHTML = demoStudentProfiles.filter(st => isStudentSelected(st.id)).map(st => `<span style="font-size:11px;padding:4px 8px;border-radius:999px;background:#14532d;color:#bbf7d0;">${safeResumeText(st.name)} <a href="#" onclick="toggleStudentSelection(${Number(st.id)});return false;" style="color:#fff;text-decoration:none;">✕</a></span>`).join('') || '<span style="font-size:11px;color:#94a3b8;">Abhi koi student select nahi kiya.</span>';
+    renderDemoStudentResumes(currentVisibleStudents());
+}
+function toggleStudentSelection(id) {
+    id = Number(id);
+    if (selectedStudentIds.has(id)) selectedStudentIds.delete(id); else selectedStudentIds.add(id);
+    persistSelectedStudents(); refreshSelectionUI();
+}
+function selectTopStudents(n) {
+    currentVisibleStudents().slice(0, n).forEach(st => selectedStudentIds.add(Number(st.id)));
+    persistSelectedStudents(); refreshSelectionUI();
+}
+function clearSelectedStudents() { selectedStudentIds.clear(); persistSelectedStudents(); refreshSelectionUI(); }
+function downloadSelectedStudents() {
+    const rows = demoStudentProfiles.filter(st => isStudentSelected(st.id));
+    if (!rows.length) { alert('Pehle kuch students select karein.'); return; }
+    const q = v => '"' + String(v ?? '').replace(/"/g, '""') + '"';
+    const csv = ['Name,Email,Education,Career goal,Skills,GitHub profile (sample)'].concat(rows.map(st => [st.name, st.email, st.education, st.career_goal, (st.skills || []).join('; '), st.github_url].map(q).join(','))).join('\n');
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8'}));
+    a.download = 'selected_students_demo.csv'; a.click(); URL.revokeObjectURL(a.href);
+}
+function filterDemoStudentResumes() {
+    const query = (document.getElementById('studentResumeSearch')?.value || '').toLowerCase().trim();
+    const filtered = demoStudentProfiles.filter(student =>
+        [student.name, student.education, student.career_goal, ...(student.skills || [])].join(' ').toLowerCase().includes(query)
+    );
+    renderDemoStudentResumes(filtered);
+}
+
+function viewDemoResume(studentId) {
+    const student = demoStudentProfiles.find(item => Number(item.id) === Number(studentId));
+    if (!student) return;
+    window._openStudentId = student.id;
+    const selBtn = document.getElementById('demoResumeSelectBtn'); if (selBtn) selBtn.textContent = isStudentSelected(student.id) ? '✓ Selected (click to remove)' : 'Select this student';
+    const projects = student.projects || [];
+    const content = document.getElementById('demoResumeContent');
+    document.getElementById('demoResumeTitle').textContent = `${student.name} — Sample Resume`;
+    content.innerHTML = `
+        <h4 style="color:#fff;margin-bottom:5px;">${safeResumeText(student.name)}</h4>
+        <p>${safeResumeText(student.email || 'Demo email not provided')}</p>
+        <p>${safeResumeText(student.education || '')}</p>
+        <hr style="border-color:#303768;margin:12px 0;">
+        <h4 style="color:#d8b4fe;">Career objective</h4><p>${safeResumeText(student.career_goal || 'Entry-level technology role')}</p>
+        <h4 style="color:#d8b4fe;margin-top:10px;">Technical skills</h4><p>${safeResumeText((student.skills || []).join(', '))}</p>
+        <h4 style="color:#d8b4fe;margin-top:10px;">Projects</h4>
+        ${projects.map(project => `<div style="margin:8px 0;padding:10px;border:1px solid #303768;border-radius:8px;"><strong>${safeResumeText(project.title)}</strong><p>${safeResumeText(project.description || '')}</p><p style="color:#94a3b8;">${safeResumeText(project.tech_stack || '')}</p>${project.github_url ? `<a href="${safeResumeText(project.github_url)}" target="_blank" rel="noopener noreferrer" style="color:#a78bfa;">GitHub repository (sample link)</a>` : ''}</div>`).join('')}
+        ${student.github_url ? `<p style="margin-top:10px;">GitHub profile: <a href="${safeResumeText(student.github_url)}" target="_blank" rel="noopener noreferrer" style="color:#a78bfa;">Open profile (sample link)</a></p>` : ''}
+        <p style="font-size:11px;color:#fbbf24;margin-top:12px;">Sample profile only. Contact, skills and project links are not independently verified.</p>`;
+    document.getElementById('demoResumeDownload').href = `/api/students/${Number(student.id)}/resume.txt`;
+    document.getElementById('demoResumeModal').style.display = 'flex';
+}
+function closeDemoResume() {
+    const modal = document.getElementById('demoResumeModal');
+    if (modal) modal.style.display = 'none';
+}
+
+function togglePortalMode() {
+    isRecruiterView = !isRecruiterView;
+    const switchBtn = document.getElementById('portalSwitchBtn');
+
+    if (isRecruiterView) {
+        syncCurrentUserToRecruiterPool();
+        switchBtn.innerText = "👤 Switch to CareerTwin-X (Candidate)";
+        switchBtn.style.borderColor = "#a855f7";
+        switchBtn.style.color = "#d8b4fe";
+        switchBtn.style.background = "rgba(168, 85, 247, 0.12)";
+
+        showPanel('recruiterPanel', null);
+        renderRecruiterCandidates();
+    } else {
+        switchBtn.innerText = "🏢 Switch to Rojgar Setu (Recruiter)";
+        switchBtn.style.borderColor = "#22c55e";
+        switchBtn.style.color = "#4ade80";
+        switchBtn.style.background = "rgba(34, 197, 94, 0.12)";
+
+        showPanel('dashboardPanel', document.querySelectorAll('.nav button')[0]);
+    }
+}
+
+function syncCurrentUserToRecruiterPool() {
+    // Real candidates must come from saved applications, never browser-side mock data.
+    candidatePool = [];
+}
+
+function renderRecruiterCandidates() {
+    const tbody = document.getElementById('recruiterCandidatesBody');
+    const countEl = document.getElementById('recActiveCandidatesCount');
+    if (!tbody) return;
+
+    if (countEl) countEl.innerText = `${candidatePool.length} Applications`;
+
+    if (!candidatePool.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="padding:18px;color:#94a3b8">No real applications are loaded here yet. Candidate access is protected until recruiter accounts and company ownership checks are configured.</td></tr>';
+        return;
+    }
+    tbody.innerHTML = candidatePool.map((c) => `
+        <tr style="border-bottom: 1px solid #1a2046;">
+            <td style="padding: 14px 18px; color: #fff; font-weight: bold;">${c.name}</td>
+            <td style="padding: 14px 18px; color: #94a3b8;">${c.role}</td>
+            <td style="padding: 14px 18px;">
+                <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                    ${c.skills.map(s => `<span style="background: rgba(168, 85, 247, 0.15); color: #d8b4fe; border: 1px solid rgba(168, 85, 247, 0.4); padding: 2px 8px; border-radius: 6px; font-size: 11px;">${s}</span>`).join('')}
+                </div>
+            </td>
+            <td style="padding: 14px 18px;">
+                <strong style="color: ${c.score >= 75 ? '#4ade80' : '#f59e0b'}; font-size: 14px;">${c.score}% MATCH</strong>
+            </td>
+            <td style="padding: 14px 18px;">
+                <button class="otp-btn" style="background: #15803d; border-color: #22c55e;" onclick="sendInterviewInvite('${c.name}')">
+                    Schedule Interview ✦
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function sendInterviewInvite(candidateName) {
+    alert('Interview invitations are not connected yet. Configure authenticated recruiter accounts and a notification provider before claiming an invitation was sent.');
+}
+
+function openJobPostModal() {
+    const modal = document.getElementById('jobPostModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        setTimeout(() => {
+            const input = document.getElementById('newJobTitleInput');
+            if (input) input.focus();
+        }, 50);
+    }
+}
+
+function closeJobPostModal() {
+    const modal = document.getElementById('jobPostModal');
+    if (modal) modal.style.display = 'none';
+}
+
+async function loadStudentProjects() {
+    const box=document.getElementById('studentProjectsList'); if(!box) return;
+    try {
+        const response=await fetch('/api/projects',{credentials:'same-origin',cache:'no-store'});
+        const rows=await response.json();
+        if(!response.ok){box.innerHTML=`<p style="color:#fca5a5">${escapeHTML(rows.error||'Please log in to manage projects.')}</p>`;return;}
+        box.innerHTML=rows.length?rows.map(p=>`<div class="card" style="padding:16px"><h3>${escapeHTML(p.title)}</h3><p style="font-size:13px;color:#94a3b8;margin:8px 0">${escapeHTML(p.description||'No description added.')}</p>${p.tech_stack?`<p style="font-size:12px;color:#a5b4fc">Tech: ${escapeHTML(p.tech_stack)}</p>`:''}<p style="margin-top:12px"><a href="${escapeHTML(p.github_url)}" target="_blank" rel="noopener noreferrer" style="color:#60a5fa">View GitHub Repository ↗</a>${p.demo_url?` · <a href="${escapeHTML(p.demo_url)}" target="_blank" rel="noopener noreferrer" style="color:#86efac">Live Demo ↗</a>`:''}</p><button class="otp-btn" style="margin-top:10px" onclick="deletePortfolioProject(${p.id})">Remove project</button></div>`).join(''):'<p style="color:#94a3b8">Abhi koi project add nahi kiya. GitHub link add karke apna proof of work share karein.</p>';
+    } catch(_){box.innerHTML='<p style="color:#fca5a5">Could not load projects. Please try again.</p>';}
+}
+async function addPortfolioProject() {
+    const title=document.getElementById('portfolioProjectTitle').value.trim();
+    const github_url=document.getElementById('portfolioGithubUrl').value.trim();
+    const tech_stack=document.getElementById('portfolioTechStack').value.trim();
+    const description=document.getElementById('portfolioDescription').value.trim();
+    const demo_url=document.getElementById('portfolioDemoUrl').value.trim();
+    const status=document.getElementById('portfolioProjectStatus');
+    status.style.color='#fca5a5';
+    try {
+        const response=await fetch('/api/projects',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({title,github_url,tech_stack,description,demo_url})});
+        const result=await response.json();
+        if(!response.ok){status.innerText=result.error||'Project could not be saved.';if(response.status===401)openAuthModal();return;}
+        status.style.color='#86efac';status.innerText='Project portfolio mein save ho gaya.';
+        ['portfolioProjectTitle','portfolioGithubUrl','portfolioTechStack','portfolioDescription','portfolioDemoUrl'].forEach(id=>document.getElementById(id).value='');
+        await loadStudentProjects();
+    } catch(_){status.innerText='Server se connect nahi ho paaya. Dobara try karein.';}
+}
+async function deletePortfolioProject(projectId) {
+    if(!confirm('Is project ko portfolio se remove karna hai?')) return;
+    try { const response=await fetch(`/api/projects/${projectId}`,{method:'DELETE',credentials:'same-origin'}); const result=await response.json(); if(!response.ok){alert(result.error||'Project could not be removed.');return;} await loadStudentProjects(); }
+    catch(_){alert('Project remove nahi ho paaya.');}
+}
+
+async function loadOfficialCompanyDirectory() {
+    const box = document.getElementById('officialCompanyDirectory');
+    if (!box) return;
+    try {
+        const response = await fetch('/api/company-directory', {cache:'no-store'});
+        if (!response.ok) throw new Error('Directory request failed');
+        const companies = await response.json();
+        box.innerHTML = companies.map(company => `
+            <article class="official-company-card">
+                <div class="official-company-top">
+                    <div class="official-company-mark" aria-hidden="true">${escapeHTML(company.initials)}</div>
+                    <div><div class="official-company-name">${escapeHTML(company.name)}</div><div class="official-company-industry">${escapeHTML(company.industry)}</div></div>
+                </div>
+                <p class="official-company-focus">${escapeHTML(company.focus)}<br><strong>Sample opening:</strong> ${escapeHTML(company.role)} (${escapeHTML(company.job_type)})<br><small>Skills: ${escapeHTML((company.skills||[]).join(', '))}</small></p>
+                <div class="official-company-footer">
+                    <span class="official-company-region">MSME · ${escapeHTML(company.location)} · Sample</span>
+                    <a class="official-company-link" href="#" onclick="showPanel('jobPanel', document.querySelector('.nav button[onclick*=&quot;jobPanel&quot;]')); renderDynamicJobMatches(0, []); return false;">Check match →</a>
+                </div>
+            </article>`).join('');
+    } catch (error) {
+        console.error('Unable to load MSME directory', error);
+        box.innerHTML = '<p style="color:#9b4b37;font-size:13px;">Could not load the MSME directory. Start the Flask server and refresh the page.</p>';
+    }
+}
+
+async function loadMSMEData() {
+    try {
+        // Keep the same-origin session cookie so the backend can identify the logged-in company.
+        const requestOptions = { credentials: 'same-origin', cache: 'no-store' };
+        const [companiesResponse, jobsResponse, mineResponse] = await Promise.all([
+            fetch('/api/companies', requestOptions),
+            fetch('/api/jobs', requestOptions),
+            fetch('/api/companies?mine=1', requestOptions)
+        ]);
+        if (!companiesResponse.ok || !jobsResponse.ok || !mineResponse.ok) {
+            throw new Error('Server returned an error while loading company/job data.');
+        }
+        const companies = await companiesResponse.json();
+        const jobs = await jobsResponse.json();
+        const mine = await mineResponse.json();
+        const select = document.getElementById('jobCompanySelect');
+        if (select) {
+            select.innerHTML = mine.length ? mine.map(c => `<option value="${c.id}">${escapeHTML(c.company_name)} — ${escapeHTML(c.location)} (${escapeHTML(c.verification_status)})</option>`).join('') : '<option value="">Company login required</option>';
+        }
+        const status = document.getElementById('recCompanyStatus'); if (status) status.innerText = mine.length ? mine[0].verification_status : 'Login required';
+        const companyBox = document.getElementById('msmeCompaniesList');
+        if (companyBox) companyBox.innerHTML = companies.length ? companies.map(c => `<div style="border:1px solid #303768;border-radius:10px;padding:12px;"><strong style="color:#fff;">${escapeHTML(c.company_name)}</strong><p style="color:#94a3b8;font-size:12px;margin-top:4px;">${escapeHTML(c.industry)} • ${escapeHTML(c.location)}</p><p style="color:${c.verification_status === 'Verified' ? '#4ade80' : '#fbbf24'};font-size:11px;margin-top:6px;">● ${escapeHTML(c.verification_status)}</p></div>`).join('') : '<p style="color:#94a3b8;font-size:12px;">No companies registered yet. Use “Register MSME Company” to add one.</p>';
+        const jobsBox = document.getElementById('companyJobsList');
+        if (jobsBox) jobsBox.innerHTML = jobs.length ? jobs.map(j => `<div style="border:1px solid #303768;border-radius:10px;padding:12px;"><strong style="color:#fff;">${escapeHTML(j.title)}</strong><p style="color:#4ade80;font-size:12px;margin-top:4px;">${escapeHTML(j.company_name)} • ${escapeHTML(j.job_type)}</p><p style="color:#94a3b8;font-size:12px;margin-top:4px;">${escapeHTML(j.location)}${j.stipend_salary ? ' • '+escapeHTML(j.stipend_salary) : ''}</p><p style="color:#cbd5e1;font-size:12px;margin-top:6px;">Skills: ${escapeHTML(j.skills)}</p><p style="color:#fbbf24;font-size:11px;margin-top:5px;">Company status: ${escapeHTML(j.verification_status)}</p>${mine.some(c=>Number(c.id)===Number(j.company_id)) ? `<button class="otp-btn" style="margin-top:8px" onclick="viewApplicants(${Number(j.id)})">View applicants / shortlist</button>` : ''}</div>`).join('') : '<p style="color:#94a3b8;font-size:12px;">No company requirements posted yet.</p>';
+    } catch (error) {
+        console.error('Unable to load MSME data', error);
+        const jobsBox = document.getElementById('companyJobsList');
+        if (jobsBox) jobsBox.innerHTML = '<p style="color:#b45309;font-size:12px;">Could not load requirements. Make sure the Flask server is running and open this page through its URL (not by opening index.html directly), then refresh.</p>';
+        const select = document.getElementById('jobCompanySelect');
+        if (select) select.innerHTML = '<option value="">Server unavailable — refresh after starting Flask</option>';
+    }
+}
+
+async function loginCompany() {
+    const email=document.getElementById('companyLoginEmail').value.trim();
+    const password=document.getElementById('companyLoginPassword').value;
+    try {
+        const response=await fetch('/api/company/login',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({email,password})});
+        const result=await response.json();
+        if(!response.ok){alert(result.error||'Company login failed.');return;}
+        alert('Logged in as '+result.company.company_name+'. You can now post jobs and review applications for this company.');
+        await loadMSMEData();
+    } catch(_){alert('Could not reach the server.');}
+}
+async function logoutCompany(){
+    try{await fetch('/api/company/logout',{method:'POST',credentials:'same-origin'}); await loadMSMEData(); alert('Company logged out.');}catch(_){alert('Could not reach the server.');}
+}
+async function viewApplicants(jobId){
+    try{
+        const response=await fetch(`/api/recruiter/jobs/${jobId}/applications`,{credentials:'same-origin'});
+        const rows=await response.json();
+        if(!response.ok){alert(rows.error||'Could not load applications.');return;}
+        const tbody=document.getElementById('recruiterCandidatesBody');
+        const count=document.getElementById('recActiveCandidatesCount');
+        if(count) count.innerText=`${rows.length} Applications`;
+        const avg=rows.length?Math.round(rows.reduce((sum,r)=>sum+r.match_score,0)/rows.length)+'%':'—';
+        const mean=document.getElementById('recMeanScore');if(mean)mean.innerText=avg;
+        tbody.innerHTML=rows.length?rows.map(r=>`<tr style="border-bottom:1px solid #1a2046"><td style="padding:14px;color:#fff">${escapeHTML(r.name)}<br><small>${escapeHTML(r.email)}</small></td><td style="padding:14px;color:#94a3b8">Application #${r.id}</td><td style="padding:14px;color:#cbd5e1">Matched: ${escapeHTML(r.matched_skills.join(', ')||'None')}<br>Missing: ${escapeHTML(r.missing_skills.join(', ')||'None')}<br><strong style="display:block;margin-top:8px;color:#93c5fd">Proof of Work</strong>${r.github_url?`<div style="margin-top:6px"><a href="${escapeHTML(r.github_url)}" target="_blank" rel="noopener noreferrer" style="color:#60a5fa">Applicant GitHub link ↗</a></div>`:''}${r.projects?.length ? r.projects.map(p=>`<div style="margin-top:6px"><strong>${escapeHTML(p.title)}</strong>${p.tech_stack?`<br><small>${escapeHTML(p.tech_stack)}</small>`:''}<br><a href="${escapeHTML(p.github_url)}" target="_blank" rel="noopener noreferrer" style="color:#60a5fa">View GitHub Repo ↗</a>${p.demo_url?` · <a href="${escapeHTML(p.demo_url)}" target="_blank" rel="noopener noreferrer" style="color:#86efac">Live Demo</a>`:''}<br><small>${escapeHTML(p.description||'')}</small></div>`).join(''):'<small>No projects submitted yet.</small>'}</td><td style="padding:14px;color:${r.match_score>=70?'#4ade80':'#fbbf24'}">${r.match_score}% skill coverage<br><small>${escapeHTML(r.status)}</small></td><td style="padding:14px"><button class="otp-btn" onclick="updateApplicationStatus(${r.id},'Shortlisted',${jobId})">Shortlist</button><button class="otp-btn" onclick="updateApplicationStatus(${r.id},'Interview',${jobId})">Interview</button></td></tr>`).join(''):'<tr><td colspan="5" style="padding:18px;color:#94a3b8">No applications for this job yet.</td></tr>';
+        document.querySelector('h3[style*="Candidate Applications"]')?.scrollIntoView({behavior:'smooth',block:'center'});
+    }catch(_){alert('Could not load applications.');}
+}
+async function updateApplicationStatus(applicationId,status,jobId){
+    try{
+        const response=await fetch(`/api/applications/${applicationId}/status`,{method:'PATCH',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({status})});
+        const result=await response.json();if(!response.ok){alert(result.error||'Could not update status.');return;}
+        await viewApplicants(jobId);
+    }catch(_){alert('Could not reach the server.');}
+}
+
+function escapeHTML(value) {
+    return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+
+function openCompanyModal() { document.getElementById('companyRegisterModal').style.display = 'flex'; }
+function closeCompanyModal() { document.getElementById('companyRegisterModal').style.display = 'none'; }
+
+async function submitMSMECompany() {
+    const data = {
+        company_name: document.getElementById('msmeName').value.trim(),
+        industry: document.getElementById('msmeIndustry').value,
+        email: document.getElementById('msmeEmail').value.trim(),
+        phone: document.getElementById('msmePhone').value.trim(),
+        location: document.getElementById('msmeLocation').value.trim(),
+        website: document.getElementById('msmeWebsite').value.trim(),
+        udyam_number: document.getElementById('msmeUdyam').value.trim(),
+        password: document.getElementById('msmePassword').value
+    };
+    if (!data.company_name || !data.industry || !data.email || !data.location || data.password.length < 10) { alert('Fill all required fields and create a company password with at least 10 characters.'); return; }
+    try {
+        const response = await fetch('/api/companies', {method:'POST', credentials:'same-origin', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)});
+        const result = await response.json();
+        if (!response.ok) { alert(result.error || 'Company registration failed.'); return; }
+        alert('Company registered successfully. Status: Pending verification. This is not yet proof of MSME/Udyam verification.');
+        ['msmeName','msmeIndustry','msmeEmail','msmePhone','msmeLocation','msmeWebsite','msmeUdyam','msmePassword'].forEach(id => { document.getElementById(id).value = ''; });
+        closeCompanyModal();
+        await loadMSMEData();
+        const select = document.getElementById('jobCompanySelect'); if (select) select.value = String(result.company_id);
+    } catch (error) { alert('Could not reach the server. Please ensure the Flask app is running.'); }
+}
+
+function openJobPostModal() {
+    loadMSMEData();
+    const modal = document.getElementById('jobPostModal');
+    if (modal) modal.style.display = 'flex';
+}
+
+function closeJobPostModal() {
+    const modal = document.getElementById('jobPostModal');
+    if (modal) modal.style.display = 'none';
+}
+
+async function confirmJobPost() {
+    const data = {
+        company_id: document.getElementById('jobCompanySelect').value,
+        title: document.getElementById('newJobTitleInput').value.trim(),
+        job_type: document.getElementById('newJobTypeInput').value,
+        skills: document.getElementById('newJobSkillsInput').value.trim(),
+        location: document.getElementById('newJobLocationInput').value.trim(),
+        stipend_salary: document.getElementById('newJobPayInput').value.trim(),
+        description: document.getElementById('newJobDescriptionInput').value.trim(),
+        deadline: document.getElementById('newJobDeadlineInput').value
+    };
+    if (!data.company_id || !data.title || !data.skills || !data.location) { alert('Please select a company and fill title, required skills and location.'); return; }
+    try {
+        const response = await fetch('/api/jobs', {method:'POST', credentials:'same-origin', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)});
+        const result = await response.json();
+        if (!response.ok) {
+            if (response.status === 401) {
+                alert('Company login required. Login with the registered company email and password, then open Post New Requirement again.');
+                await loadMSMEData();
+                return;
+            }
+            alert(result.error || 'Unable to publish requirement.');
+            return;
+        }
+        alert('Requirement saved to the database. Company verification is a separate step.');
+        ['newJobTitleInput','newJobSkillsInput','newJobLocationInput','newJobPayInput','newJobDescriptionInput','newJobDeadlineInput'].forEach(id => document.getElementById(id).value = '');
+        closeJobPostModal();
+        await loadMSMEData();
+    } catch (error) { alert('Could not reach the server. Please ensure the Flask app is running.'); }
+}
+
+document.addEventListener('DOMContentLoaded', () => { loadOfficialCompanyDirectory(); loadMSMEData(); loadDemoStudentResumes(); });
+</script>
+
+</body>
+</html>
